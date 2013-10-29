@@ -1,18 +1,5 @@
 ItemInfo = {}
 
--- Loads an item info file.
-function LoadItemInfo (fname)
-	local info = dofile (fname)
-	if type (info) == "table" then
-		for k,v in pairs (info) do
-			if v.filename == nil then v.filename = k end  -- set default filename to k
-		end
-		copyInto (info, ItemInfo)
-	else
-		print ("Can't load item info file '" .. fname .. "'")
-	end
-end
-
 local ActiveLayers = {}
 
 -- Opens a window and viewport fitted to the device resolution.
@@ -78,62 +65,6 @@ function NewLayer (viewport, camera, parallax_x, parallax_y)
 		partition.layer:setParallax (parallax_x, parallax_y)
 	end
 	return partition
-end
-
-function NewLayers (n, tray_h, viewport)
-	local L = {}
-	L.camera = MOAICamera2D.new ()
-	L.camera:setLoc ( viewport.w/2, viewport.h/2 - tray_h )
-	L.items = {}
-	
-	for i = 1, n do
-		table.insert (L, {})
-		L[i] = NewLayer (viewport, L.camera, 1, 1)
-		table.insert (ActiveLayers, L[i])
-		MOAISim.pushRenderPass (L[i].layer)
-		
-		L[i].add = function (self, item, x, y)
-			if L.items[item] ~= nil then self:remove (item) end
-			L.items[item] = true
-			item.fromTray = nil
-			item.layer = self.layer
-			item.partition = self.partition
-			self.partition:insertProp (item.prop)
-			if x and y then
-				item.prop:setLoc (x, y)
-			end
-			return item
-		end
-		L[i].remove = function (self, item)
-			L.items[item] = nil
-			item.layer = nil
-			self.partition:removeProp (item.prop)
-		end
-	end
-	return L
-end
-
---[[ Creates a new prop of one color inside a single layer.
-	Returns the prop itself, with the layer in its .layer element. ]]
-function NewColorLayer (viewport, r, g, b, a, w, h)
-	local prop = MOAIProp2D.new ()
-	local image = MOAIImage.new ()
-	image:init (8, 8)
-	image:fillRect ( 0, 0, 8, 8, r, g, b, a )
-	
-	local quad = MOAIGfxQuad2D.new ()
-	quad:setTexture ( image )
-	w = w or viewport.w
-	h = h or viewport.h
-	quad:setRect ( -w/2, -h/2, w/2, h/2 )
-	prop:setDeck ( quad )
-	
-	local layer = MOAILayer2D.new ()
-	layer:setViewport ( viewport )
-	layer:insertProp ( prop )
-	prop.layer = layer
-	
-	return prop
 end
 
 function NewTray (tray_h, viewport)
@@ -206,45 +137,15 @@ function ReplaceItemImage (item, newName)
 	return item
 end
 
-function NewItem (name)
-	-- Make sure an ItemInfo entry exists and its file is loaded
-	if not ItemInfo[name] then ItemInfo[name] = { filename = name } end
-	if not ItemInfo[name].image then
-		ItemInfo[name].image = MOAITexture.new ()
-		ItemInfo[name].image:load (ItemInfo[name].filename)
-	end
-	-- Copy the ItemInfo entry to a new item object and initialize
-	local item = copy (ItemInfo[name])
-	item.w, item.h = item.image:getSize ()
-	item.deck = MOAIGfxQuad2D.new ()
-	item.deck:setTexture ( item.image )
-	item.deck:setRect ( -item.w/2, -item.h/2, item.w/2, item.h/2 )
-	item.prop = MOAIProp2D.new ()
-	item.prop.item = item
-	item.prop:setDeck ( item.deck )
-	-- Done.
-	return item
-end
-
-function CopyItem (fromItem)
-	-- Make a new deck and a new prop, but copy everything else.
-	local item = copy (fromItem)
-	item.deck = MOAIGfxQuad2D.new ()
-	item.deck:setTexture ( item.image )
-	item.deck:setRect ( -item.w/2, -item.h/2, item.w/2, item.h/2 )
-	item.prop = MOAIProp2D.new ()
-	item.prop.item = item
-	item.prop:setDeck ( item.deck )
-	return item
-end
-
--- Snaps the given item's position to an 8x8 pixel grid, or 16 pixels at ground level.
-function Snap ( item )
+-- Snaps the given item's position to an 8x8 pixel grid, or (optionally) 16 pixels at ground level.
+function Snap ( item, ground_snap )
 	x, y = item.prop:getLoc ()
 	bottom_y = y - item.h/2
 	x = math.floor ( (x+4)/8 ) * 8
 	bottom_y = math.floor ( (bottom_y+4)/8 ) * 8
-	--if math.abs (bottom_y) < 16 then bottom_y = 0 end  -- larger snap at ground level
+	if ground_snap then
+		if math.abs (bottom_y) < 16 then bottom_y = 0 end  -- larger snap at ground level
+	end
 	item.prop:setLoc ( x, bottom_y + item.h/2 )
 	return item
 end
@@ -364,6 +265,8 @@ function saveTable ( t, file_name )
 	f:write ( stringizeValue (t) )
 	f:close ()
 end
+
+--[[ Loads a table from a file. ]]
 function loadTable ( file_name )
 	return dofile ( file_name )
 end

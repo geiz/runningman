@@ -72,9 +72,8 @@ end
 PropTypes = {}      -- type_key -> prop_type
 PropInstances = {}  -- type_key -> table (prop_instance)
 
---PropInstances = {}  -- indexed by: (proptype, layer) -> table of propdata
-PropsByType = {}  -- key=proptype, value=series (of propdata)
-LoadedImages = {}  -- key=filename, value=imagedata
+PropsByType = {}    -- key=proptype, value=series (of propdata)
+LoadedImages = {}   -- key=filename, value=imagedata
 local NonTextureImages = {}
 
 LayersInEffect = {}
@@ -175,29 +174,6 @@ function CopyToLayer (propdata, layerdata, x, y)
 	return item
 end
 
---[[function GetPhysics (propdata)
-	-- Create a default physics setup if not present
-	if not propdata.physics then
-		local w, h = propdata.physics.w, propdata.physics.h
-		propdata.physics = {}
-		propdata.physics.polygon = { -w/2, -h/2, -w/2, h/2, w/2, h/2, w/2, -h/2 }
-	end
-	return propdata.physics
-end
-
-function RegenPhysicsHandles (propdata)
-	-- Regenerates all physics node/edge props
-	local physics = GetPhysics (propdata)
-	for instance in pairs (propdata) do
-	end
-end
-
-function CopyToLayerWithPhysics (propdata, layerdata, physics_layerdata, x, y)
-	local prop = CopyToLayer (propdata, layerdata, x, y)
-	local physics = GetPhysics (propdata)
-	return prop
-end]]
-
 function CreatePhysicsNodeProp (x, y)
 	local w, h = 12, 12
 
@@ -211,25 +187,11 @@ function CreatePhysicsNodeProp (x, y)
 		end)
 	prop:setDeck (scriptDeck)
 	prop:setLoc (x, y)
-	--prop:setPriority (1)
-	--surface.partition:insertProp (prop)
 	
 	local propdata = { w = w, h = h }
 	propdata.prop = prop
 	propdata.prop.data = propdata
 	return propdata
-
-
-	--[[SingleQuads.Green = SingleQuads.Green or NewSingleColorQuad (0, 1, 0, 0.5, 12, 12, true)
-	local propdata = { w=12, h=12 }
-	local prop = MOAIProp2D.new ()
-	prop:setDeck (SingleQuads.Green)
-	prop:setLoc (x, y)
-	--prop:setPriority (1)
-	--surface.partition:insertProp (prop)
-	propdata.prop = prop
-	propdata.prop.data = propdata
-	return propdata]]
 end
 
 function CreatePhysicsEdgeProp (physics)
@@ -283,7 +245,8 @@ function PlacePhysicsNodes (surface, background_surface, prop)
 	Physics[prop.filename] = physics
 end
 
-function MoveToSurface (propdata, layerdata, x, y)
+-- Removes a prop from its surface
+function RemoveProp (propdata)
 	-- First, remove prop from the partition or layer.
 	if propdata.partition then
 		propdata.partition:removeProp (propdata.prop)
@@ -294,20 +257,9 @@ function MoveToSurface (propdata, layerdata, x, y)
 	end
 	-- Second, erase layer/partition/index information.
 	propdata.layerdata.props[propdata] = nil
-	--PropInstances[propdata.proptype][propdata.layerdata][propdata] = nil
 	propdata.partition = nil
 	propdata.layer = nil
 	propdata.layerdata = nil
-	-- Third, place prop into new layer (if applicable)
-	if layerdata then
-		propdata.partition = layerdata.partition
-		propdata.layer = layerdata.layer
-		propdata.layerdata = layerdata
-		layerdata.props[propdata] = true
-		--PropInstances[propdata.proptype][propdata.layerdata][propdata] = true
-		if x and y then propdata.prop:setLoc (x, y) end
-		propdata.partition:insertProp (propdata.prop)
-	end
 end
 
 function AlphaOk (propdata, world_x, world_y)
@@ -374,16 +326,12 @@ function PickFromLayers (mouse_x, mouse_y)
 	return nil
 end
 
--- The following functions are (sort of) private --
-
-function NewSingleColorImage (r, g, b, a, w, h, border)
+function NewSingleColorImage (r, g, b, a, w, h)
 	local image = MOAIImage.new ()
 	image:init (w or 8, h or 8)
 	w = w or 8
 	h = h or 8
 	image:fillRect ( 0, 0, w, h, r, g, b, a )
-	--if border then
-	--end
 	return image
 end
 
@@ -395,69 +343,17 @@ function NewSingleColorQuad (r, g, b, a, w, h, border)
 	return quad
 end
 
-function PlacePhysicsHandle (surface, x, y)
-	SingleQuads.Green = SingleQuads.Green or NewSingleColorQuad (0, 1, 0, 0.5, 12, 12, true)
-	local prop = MOAIProp2D.new ()
-	prop:setDeck (SingleQuads.Green)
-	prop:setLoc (x, y)
-	prop:setPriority (10)
-	surface.partition:insertProp (prop)
-	return prop
-end
-
-function PlacePhysicsEdge (surface, x0, y0, x1, y1)
-	
-end
-
-function CreatePhysicsRectangle (surface, x, y, w, h)
-	-- where x,y is the object's center.
-	local polygon = {
-		nodes = {}
-	}
-	local function createNode (at_x, at_y)
-		local node = { x = at_x, y = at_y}
-		table.insert (polygon.nodes, node)
-	end
-	-- Specify nodes in order
-	createNode (x - w/2, y - h/2)
-	createNode (x - w/2, y)
-	createNode (x - w/2, y + h/2)
-	createNode (x, y + h/2)
-	createNode (x + w/2, y + h/2)
-	createNode (x + w/2, y)
-	createNode (x + w/2, y - h/2)
-	createNode (x, y - h/2)
-	return polygon
-end
-
-function ShowPhysicsPolygon (surface, polygon)
-	for i, n in ipairs (polygon.nodes) do
-		n.prop = PlacePhysicsHandle (surface, n.x, n.y)
-		n.prop.surface = surface
-		--n.prop.
-	end
-end
-
 --[[ Creates a new prop of one color inside a single layer.
 	Returns the prop itself, with the layer in its .layer element. ]]
 function NewColorLayer (viewport, r, g, b, a, w, h)
 	local prop = MOAIProp2D.new ()
-	--[[local image = NewSingleColorImage (r, g, b, a)
-	local quad = MOAIGfxQuad2D.new ()
-	quad:setTexture ( image )
-	w = w or viewport.w
-	h = h or viewport.h
-	quad:setRect ( -w/2, -h/2, w/2, h/2 )]]
-	
 	w = w or viewport.w
 	h = h or viewport.h
 	prop:setDeck ( NewSingleColorQuad (r, g, b, a, w, h) )
-	
 	local layer = MOAILayer2D.new ()
 	layer:setViewport ( viewport )
 	layer:insertProp ( prop )
 	prop.layer = layer
-	
 	return prop
 end
 

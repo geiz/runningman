@@ -150,7 +150,7 @@ function editorMouseClick ( down )
 						Snap ( pick )
 					else
 						-- Prop dragged back to tray. Remove from level.
-						MoveToSurface (pick, nil)
+						RemoveProp (pick)
 					end
 				end
 			end
