@@ -1,0 +1,197 @@
+return {
+    BackgroundSurface2 = {
+        {
+            y = 161.5,
+            h = 451,
+            filename = "tree-1.png",
+            scale = 1,
+            priority = 221,
+            w = 508,
+            x = 136
+        },
+        {
+            y = 309,
+            h = 442,
+            filename = "tree-3.png",
+            scale = 1,
+            priority = 147,
+            w = 296,
+            x = -112
+        },
+        {
+            y = 249.5,
+            h = 451,
+            filename = "tree-1.png",
+            scale = 1,
+            priority = 185,
+            w = 508,
+            x = 536
+        }
+    },
+    BackgroundSurface1 = {
+        {
+            y = 281.5,
+            h = 451,
+            filename = "tree-1.png",
+            scale = 1,
+            priority = 213,
+            w = 508,
+            x = -192
+        },
+        {
+            y = 166.5,
+            h = 333,
+            filename = "mountain-2.png",
+            scale = 1,
+            priority = 214,
+            w = 596,
+            x = -208
+        },
+        {
+            y = 271,
+            h = 430,
+            filename = "tree-2.png",
+            scale = 1,
+            priority = 236,
+            w = 488,
+            x = 560
+        },
+        {
+            y = 44.5,
+            h = 121,
+            filename = "cohart96.png",
+            scale = 1,
+            priority = 244,
+            w = 96,
+            x = 192
+        },
+        {
+            y = 144.5,
+            h = 161,
+            filename = "Rock-1.png",
+            scale = 1,
+            priority = 6,
+            w = 283,
+            x = -128
+        },
+        {
+            y = 263,
+            h = 430,
+            filename = "tree-2.png",
+            scale = 1,
+            priority = 244,
+            w = 488,
+            x = 184
+        },
+        {
+            y = 157.5,
+            h = 171,
+            filename = "mountain-1.png",
+            scale = 1,
+            priority = 7,
+            w = 581,
+            x = 80
+        },
+        {
+            y = 213.5,
+            h = 171,
+            filename = "mountain-1.png",
+            scale = 1,
+            priority = 218,
+            w = 581,
+            x = 176
+        },
+        {
+            y = 254.5,
+            h = 333,
+            filename = "mountain-2.png",
+            scale = 1,
+            priority = 217,
+            w = 596,
+            x = 384
+        },
+        {
+            y = 217.5,
+            h = 451,
+            filename = "tree-1.png",
+            scale = 1,
+            priority = 239,
+            w = 508,
+            x = -312
+        },
+        {
+            y = 295,
+            h = 430,
+            filename = "tree-2.png",
+            scale = 1,
+            priority = 216,
+            w = 488,
+            x = 360
+        },
+        {
+            y = 32.5,
+            h = 161,
+            filename = "Rock-1.png",
+            scale = 1,
+            priority = 240,
+            w = 283,
+            x = 8
+        },
+        {
+            y = 301,
+            h = 442,
+            filename = "tree-3.png",
+            scale = 1,
+            priority = 231,
+            w = 296,
+            x = 16
+        },
+        {
+            y = 185.5,
+            h = 451,
+            filename = "tree-1.png",
+            scale = 1,
+            priority = 237,
+            w = 508,
+            x = 400
+        }
+    },
+    GameSurface = {
+        {
+            y = 188.5,
+            h = 121,
+            filename = "cohart96.png",
+            scale = 1,
+            priority = 204,
+            w = 96,
+            x = 280
+        },
+        {
+            y = 136.5,
+            h = 161,
+            filename = "Rock-1.png",
+            scale = 1,
+            priority = 141,
+            w = 283,
+            x = 128
+        },
+        {
+            y = 273.5,
+            h = 451,
+            filename = "tree-1.png",
+            scale = 1,
+            priority = 184,
+            w = 508,
+            x = 592
+        },
+        {
+            y = 104.5,
+            h = 161,
+            filename = "Rock-1.png",
+            scale = 1,
+            priority = 220,
+            w = 283,
+            x = 8
+        }
+    }
+}

@@ -1,0 +1,14 @@
+-- Function list + DEF:
+
+
+-- initiallizes a new window
+MOAISim.openWindow("Hello World Window", 320, 480)cdc	cdDC	
+
+-- 320, 480 size and 10, 15 scale will give pixel size of 32, 32. (means each pixel shown on the screen is worth 32x32 of world units)
+viewport = MOAIViewport.new()
+viewport:setSize(320, 480) 
+viewport:setScale(10, -15)  -- Inverts the y axis
+viewport:setOffset(-1,1) -- Moves projection system one half to left and one half up
+
+layer = MOAILayer2D.new()
+layer:setViewport(viewport)
