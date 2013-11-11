@@ -6,8 +6,7 @@
 
 _scale = 10
 _gravity = 20
-_screen = {w = 800, h = 600} -- Pixels taken on screen
-_stage = {w = 640, h = 400} -- Pixels in the actual game
+_stage = {w = 960, h = 640} -- Pixels in the actual game
 _debugMode = false -- enables debug in debug.lua
 
 _imgFolder = "assets/images/"
@@ -32,11 +31,8 @@ _eRadius = 10
 
 
 
--- open sim window
-MOAISim.openWindow( 'Metal Slug + FTL', _screen.w, _screen.h)
-
 _worldFriction = 0.2
 
 
 _charCode = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _+-()[]{}|\/?.,<>!~`@#$%^&*\'":;'
-_fontScale = _screen.h/_stage.h
+--_fontScale = _screen.h/_stage.h

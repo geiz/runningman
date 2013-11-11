@@ -7,12 +7,6 @@
 
 
 
--- setup viewport
-viewport = MOAIViewport.new()
-viewport:setSize( _screen.w, _screen.h)
-viewport:setScale( _stage.w, _stage.h)
---_viewport:setOffset(1,1)
-
 -- setup layers
 layer = MOAILayer2D.new() -- Main playable, interactable layers
 layerEff = MOAILayer2D.new() -- In front of _layer, displays effects
@@ -23,16 +17,18 @@ layerBG1 = MOAILayer2D.new() -- "Farthest" Background Layer
 layerBG2 = MOAILayer2D.new()
 layerBG3 = MOAILayer2D.new() -- "closest" Background Layer (still behind _layer)
  
-layer:setViewport(viewport)
-layerEff:setViewport(viewport)
-layerDiag:setViewport(viewport)
-layerMenu:setViewport(viewport)
-layerDebug:setViewport(viewport)
-layerBG1:setViewport(viewport)
-layerBG2:setViewport(viewport)
-layerBG3:setViewport(viewport)
+function InitLayers ()
+	layer:setViewport(viewport)
+	layerEff:setViewport(viewport)
+	layerDiag:setViewport(viewport)
+	layerMenu:setViewport(viewport)
+	layerDebug:setViewport(viewport)
+	layerBG1:setViewport(viewport)
+	layerBG2:setViewport(viewport)
+	layerBG3:setViewport(viewport)
 
-MOAISim.pushRenderPass(layer)
+	MOAISim.pushRenderPass(layer)
+end
 
 -- Creates and returns a static prop
 function newImg (imgName, width, height)

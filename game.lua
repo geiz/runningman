@@ -1,10 +1,16 @@
 -- game.lua
 
 dofile("initialize.lua")
+
+dofile("util.lua")
+viewport = OpenViewport ('Metal Slug + FTL', _stage.w, _stage.h)
+
 dofile("display.lua")
 dofile("world.lua")
 dofile("player.lua")
 dofile("enemies.lua")
+
+InitLayers ()
 
 layer:setBox2DWorld(world) -- box2D physics for the main playable layer
 --BG img
