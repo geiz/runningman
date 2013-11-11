@@ -2,6 +2,8 @@ dofile ('util.lua')
 dofile ('editor_ui.lua')
 dofile ('game_ui.lua')
 
+_imgFolder = "assets/images/"
+
 -- Create the viewport and primary camera
 view_w, view_h, tray_h = 960, 640, 80
 viewport = OpenViewport ('Editor Tool', view_w, view_h)
@@ -90,19 +92,19 @@ end
 function SetEditorMode (m)
 	EditMode = m
 	if m == "G" then
-		ReplaceItemImage (modeTile, "images/tileG.png")
+		ReplaceItemImage (modeTile, "tileG.png")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, GameSurface, tray)
 		TargetSurface = GameSurface
 	end
 	if m == "B2" then
-		ReplaceItemImage (modeTile, "images/tileB2.png")
+		ReplaceItemImage (modeTile, "tileB2.png")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, tray)
 		TargetSurface = BackgroundSurface2
 	end
 	if m == "B1" then
-		ReplaceItemImage (modeTile, "images/tileB1.png")
+		ReplaceItemImage (modeTile, "tileB1.png")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, tray)
 		TargetSurface = BackgroundSurface1
@@ -111,13 +113,13 @@ end
 
 NextMode = { B1="B2", B2="G", G="B1" }
 
-modeTile = LoadProp ("basic", "images/tileG.png")
-LoadProp ("gametile", "images/cohart96.png")
-LoadProp ("gametile", "images/Rock-1.png")
-LoadProp ("gametile", "images/mountain-1.png")
-LoadProp ("gametile", "images/mountain-2.png")
-LoadProp ("gametile", "images/tree-1.png")
-LoadProp ("gametile", "images/tree-2.png")
-LoadProp ("gametile", "images/tree-3.png")
+modeTile = LoadProp ("basic", "tileG.png")
+LoadProp ("gametile", "cohart96.png")
+LoadProp ("gametile", "rock-1.png")
+LoadProp ("gametile", "mountain-1.png")
+LoadProp ("gametile", "mountain-2.png")
+LoadProp ("gametile", "tree-1.png")
+LoadProp ("gametile", "tree-2.png")
+LoadProp ("gametile", "tree-3.png")
 
 SetEditorMode ("B1")
