@@ -1,5 +1,4 @@
-dofile ('editor_util.lua')
-dofile ('loadprops.lua')
+dofile ('util.lua')
 dofile ('editor_ui.lua')
 dofile ('game_ui.lua')
 
@@ -18,7 +17,7 @@ BackgroundSurface1.layer:setClearColor (1,1,1)  -- Set this surface to clear the
 tray = CreateTray (64, 80)
 PositionTray (tray, "BOTTOM", viewport)
 
-priority = LoadLevel ('level001.lv')
+priority = LoadLevel ('working_levels/level001.lv')
 
 function GetPropInfo (surface)
 	local all = {}
@@ -91,19 +90,19 @@ end
 function SetEditorMode (m)
 	EditMode = m
 	if m == "G" then
-		ReplaceItemImage (modeTile, "tileG.png")
+		ReplaceItemImage (modeTile, "images/tileG.png")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, GameSurface, tray)
 		TargetSurface = GameSurface
 	end
 	if m == "B2" then
-		ReplaceItemImage (modeTile, "tileB2.png")
+		ReplaceItemImage (modeTile, "images/tileB2.png")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, tray)
 		TargetSurface = BackgroundSurface2
 	end
 	if m == "B1" then
-		ReplaceItemImage (modeTile, "tileB1.png")
+		ReplaceItemImage (modeTile, "images/tileB1.png")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, tray)
 		TargetSurface = BackgroundSurface1
@@ -112,13 +111,13 @@ end
 
 NextMode = { B1="B2", B2="G", G="B1" }
 
-modeTile = LoadProp ("basic", "tileG.png")
-LoadProp ("gametile", "cohart96.png")
-LoadProp ("gametile", "Rock-1.png")
-LoadProp ("gametile", "mountain-1.png")
-LoadProp ("gametile", "mountain-2.png")
-LoadProp ("gametile", "tree-1.png")
-LoadProp ("gametile", "tree-2.png")
-LoadProp ("gametile", "tree-3.png")
+modeTile = LoadProp ("basic", "images/tileG.png")
+LoadProp ("gametile", "images/cohart96.png")
+LoadProp ("gametile", "images/Rock-1.png")
+LoadProp ("gametile", "images/mountain-1.png")
+LoadProp ("gametile", "images/mountain-2.png")
+LoadProp ("gametile", "images/tree-1.png")
+LoadProp ("gametile", "images/tree-2.png")
+LoadProp ("gametile", "images/tree-3.png")
 
 SetEditorMode ("B1")

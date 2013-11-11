@@ -157,7 +157,7 @@ function editorMouseClick ( down )
 			pick = nil
 			
 			
-			SaveLevel ('level001.lv')
+			SaveLevel ('working_levels/level001.lv')
 		end
 	end
 end
