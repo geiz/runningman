@@ -6,16 +6,16 @@ dofile("util.lua")
 viewport = OpenViewport ('Metal Slug + FTL', _stage.w, _stage.h)
 
 dofile("display.lua")
+background = newImg (_bgImg)
+--layer:insertProp(background)
 dofile("world.lua")
 dofile("player.lua")
 dofile("enemies.lua")
 
+
 InitLayers ()
 
 layer:setBox2DWorld(world) -- box2D physics for the main playable layer
---BG img
-background = newImg ("testBG.png",320,200)
-layer:insertProp(background)
 
 isBulletTrue = false   
 explosionProp = newImg ("explosion.png",6,6)
@@ -87,7 +87,7 @@ end)]]
 
 
 -- setup platforms
-platforms = {}
+--[[platforms = {}
 platforms[1] = {}
 platforms[1].body = world:addBody( MOAIBox2DBody.KINEMATIC, 70, -44 )
 platforms[1].body.tag = 'platform'
@@ -130,7 +130,7 @@ platformThread:run(
         coroutine.yield()
     end
 end )
-
+]]
 
     
 dofile("debug.lua")

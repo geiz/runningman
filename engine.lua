@@ -159,20 +159,20 @@ function ()
         local dx, dy = player.body:getLinearVelocity()
         if player.onGround then
             if player.move.right and not player.move.left then
-                dx = 50
+                dx = player.body.velocity
                 player.body.direction = 1
             elseif player.move.left and not player.move.right then
-                dx = -50
+                dx = -player.body.velocity
                 player.body.direction = 0
             else
                 dx = 0
             end
         else
             if player.move.right and not player.move.left and dx <= 0 then
-                dx = 25
+                dx = player.body.velocity/2
                 player.body.direction = 1
             elseif player.move.left and not player.move.right and dx >= 0 then
-                dx = -25
+                dx = -player.body.velocity/2
                 player.body.direction = 0
             end
         end

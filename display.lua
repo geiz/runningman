@@ -17,6 +17,7 @@ layerBG1 = MOAILayer2D.new() -- "Farthest" Background Layer
 layerBG2 = MOAILayer2D.new()
 layerBG3 = MOAILayer2D.new() -- "closest" Background Layer (still behind _layer)
  
+
 function InitLayers ()
 	layer:setViewport(viewport)
 	layerEff:setViewport(viewport)
@@ -28,6 +29,7 @@ function InitLayers ()
 	layerBG3:setViewport(viewport)
 
 	MOAISim.pushRenderPass(layer)
+    MOAISim.pushRenderPass(layerBG1)
 end
 
 -- Creates and returns a static prop

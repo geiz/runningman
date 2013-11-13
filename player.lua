@@ -25,28 +25,13 @@ player.body.tag = 'player'
 player.body:setFixedRotation( false )
 player.body:setMassData( 80 )
 player.body:resetMassData()
+player.body.velocity = _playerDefaultVelocity
 
 player.polygon = player.body:addPolygon( player.verts )
 player.rect = player.body:addRect( -10, -10, 10, 10 )
 player.polygon :setRestitution( 0 ) -- valid value between 0 - 1
 player.polygon :setFriction( 1 )
 player.rect:setSensor( true )
-
--- setting camera
---[[
-camera = MOAITransform.new ()
-layer:setCamera(camera)
-
-fitter = MOAICameraFitter2D.new ()
-fitter:setViewport ( viewport )
-fitter:setCamera ( camera )
-
-anchor = MOAICameraAnchor2D.new ()
-anchor:setParent ( player.body )
-fitter:insertAnchor ( anchor )
-fitter:setMin(10)
-
-fitter:start()]]
 
 -------- player body imgs/settings
 --player.body.prop = newImg("hero1-idle.png",10,16)

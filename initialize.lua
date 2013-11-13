@@ -7,15 +7,18 @@
 _scale = 10
 _gravity = 20
 _stage = {w = 960, h = 640} -- Pixels in the actual game
-_debugMode = false -- enables debug in debug.lua
+_debugMode = true -- enables debug in debug.lua
+_fontScale = 20 -- fonts for debug
 
 _imgFolder = "assets/images/"
 _animFolder = "assets/animations/"
 
--- Tile Animation
+-- PlayerInit Values
 _playerAnim = "numbers.png"
+_playerDefaultVelocity = 200
 
-_bgImg = "bg.png"
+
+_bgImg = "testMap.png"
 _tree1 = "tree-1.png"
 _tree2 = "tree-2.png"
 _tree3 = "tree-3.png"
