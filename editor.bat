@@ -1,1 +1,2 @@
 @moai editor.lua
+pause
