@@ -1,1 +1,2 @@
 @moai game.lua
+pause
