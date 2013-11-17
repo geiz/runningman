@@ -1,7 +1,7 @@
 -- actions.lua
 
 ----------------------------------------------------------------
--- This file contains all actions and abilities for player and NPC and npc
+-- This file contains all actions and abilities for player and NPC
 ----------------------------------------------------------------
 
 function playerDash()

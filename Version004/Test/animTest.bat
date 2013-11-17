@@ -1,2 +1,0 @@
-@moai animTest.lua
-pause

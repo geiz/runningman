@@ -6,7 +6,7 @@ dofile("util.lua")
 viewport = OpenViewport ('Metal Slug + FTL', _stage.w, _stage.h)
 
 dofile("display.lua")
-background = newImg (_bgImg)
+background = newImg (_bgImg_)
 --layer:insertProp(background)
 dofile("world.lua")
 dofile("player.lua")
