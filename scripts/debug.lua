@@ -6,19 +6,19 @@
 
 
 
-if _debugMode then
+if _debugMode_ then
     
     print("Debug Mode Enabled")
         -- Debug Text
     debug = MOAITextBox.new()
-    debug:setRect( -160 * _fontScale, -100 * _fontScale, 160 * _fontScale, 100 * _fontScale )
-    debug:setScl( 1 / _fontScale )
+    debug:setRect( -160 * _fontScale_, -100 * _fontScale_, 160 * _fontScale_, 100 * _fontScale_ )
+    debug:setScl( 1 / _fontScale_ )
     debug:setYFlip( true )
     debug:setColor( 1, 1, 1 )
     debug:setString( 'debug' )
     debug.font = MOAIFont.new()
-    debug.font:load( 'verdana.ttf' )
-    debug.font:preloadGlyphs( _charCode, math.ceil( 4 * _fontScale ), 72 )
+    debug.font:load( 'data\\verdana.ttf' )
+    debug.font:preloadGlyphs( _charCode_, math.ceil( 4 * _fontScale_ ), 72 )
     debug:setFont( debug.font )
 
     -- 
