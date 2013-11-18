@@ -67,7 +67,7 @@ function ()
             
 
             bulletsLength = bulletsLength + 1
-            bulletsImg[bulletsLength] = newImg(_bulletTexture, 10, 10)
+            bulletsImg[bulletsLength] = newImg(_bulletTexture_, 10, 10)
             layer:insertProp(bulletsImg[bulletsLength])
     
             local pvx, pvy = player.body:getLinearVelocity()
@@ -94,7 +94,7 @@ function ()
             for s,t in ipairs (e) do -- for every enemy
                 ex,ey = e[s].body:getPosition() 
                  
-                if isCollide(ex, ey, _eRadius, bx, by, _bulletRadius ) then
+                if isCollide(ex, ey, _eRadius_, bx, by, _bulletRadius_ ) then
                     
                     layer:removeProp(bulletsImg[k])  
                     bullets[k]:destroy()  
@@ -103,21 +103,14 @@ function ()
 
                     layer:removeProp (e[s].animIdle)
                     e[s].body:destroy()
-                    _eLength = removeFromIndex(e, _eLength, s)
+                    _eLength_ = removeFromIndex(e, _eLength_, s)
                 end
             end
-			if abs(bx-px) > bulletMAXdist or abs(by-py) > bulletMAXdist then
- 
-            	
-               
+			if math.abs(bx-px) > bulletMAXdist or math.abs(by-py) > bulletMAXdist then            
                 layer:removeProp(bulletsImg[k])  
                 bullets[k]:destroy()  
-            	bulletsLength = removeFromIndex(bullets, bulletsLength, k)
-                print(bulletsLength)
-            	--removeFromIndex(bulletsImg, bulletsLength, k)
-            	--bulletsLength = bulletsLength - 1
-            	--break
-
+                bulletsLength = removeFromIndex(bullets, bulletsLength, k)
+                 print(bulletsLength)
             end
         end        
         coroutine.yield()

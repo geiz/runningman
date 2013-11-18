@@ -6,8 +6,8 @@
 
 -- define layers
 world = MOAIBox2DWorld.new()
-world:setGravity(0, -_gravity)
-world:setUnitsToMeters(1/_scale)
+world:setGravity(0, -_gravity_)
+world:setUnitsToMeters(1/_scale_)
 
 -- setup grounds
 -- setup ground
@@ -31,9 +31,9 @@ ground.fixtures = {
     --ground.body:addChain( ground.verts3 ),
     --ground.body:addChain( ground.verts4 )
 }
-ground.fixtures[1]:setFriction( _worldFriction )
---ground.fixtures[2]:setFriction( _worldFriction )
---ground.fixtures[3]:setFriction( _worldFriction )
---ground.fixtures[4]:setFriction( _worldFriction )
+ground.fixtures[1]:setFriction( _worldFriction_ )
+--ground.fixtures[2]:setFriction( _worldFriction_ )
+--ground.fixtures[3]:setFriction( _worldFriction_ )
+--ground.fixtures[4]:setFriction( _worldFriction_ )
 
 

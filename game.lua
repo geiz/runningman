@@ -1,16 +1,18 @@
 -- game.lua
 
+function extend (fileName)
+	dofile("scripts/"..fileName)
+end
 dofile("initialize.lua")
 
-dofile("util.lua")
-viewport = OpenViewport ('Metal Slug + FTL', _stage.w, _stage.h)
-
-dofile("display.lua")
+extend ("util.lua")
+extend ("display.lua")
 background = newImg (_bgImg_)
 --layer:insertProp(background)
-dofile("world.lua")
-dofile("player.lua")
-dofile("enemies.lua")
+extend ("entity.lua")
+extend ("world.lua")
+extend ("player.lua")
+extend ("enemies.lua")
 
 
 InitLayers ()
@@ -133,10 +135,10 @@ end )
 ]]
 
     
-dofile("debug.lua")
-dofile("controls.lua")
-dofile("actions.lua")
-dofile("engine.lua")
+extend ("debug.lua")
+extend ("controls.lua")
+extend ("actions.lua")
+extend ("engine.lua")
 
 
 

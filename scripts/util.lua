@@ -127,7 +127,7 @@ function ReplaceItemImage (item, newName)
 	if not ItemInfo[newName] then ItemInfo[newName] = { filename = newName } end
 	if not ItemInfo[newName].image then
 		ItemInfo[newName].image = MOAITexture.new ()
-		ItemInfo[newName].image:load (_imgFolder .. ItemInfo[newName].filename)
+		ItemInfo[newName].image:load (_imgFolder_ .. ItemInfo[newName].filename)
 	end
 	-- Perform replacement and update info
 	copyInto (ItemInfo[newName], item)
@@ -568,7 +568,7 @@ function AlphaOk (propdata, world_x, world_y)
 	-- Load image (if not already loaded) and query the correct pixel
 	if not NonTextureImages[propdata.filename] then
 		NonTextureImages[propdata.filename] = MOAIImage.new ()
-		NonTextureImages[propdata.filename]:load (_imgFolder .. propdata.filename)
+		NonTextureImages[propdata.filename]:load (_imgFolder_ .. propdata.filename)
 	end
 	r, g, b, a = NonTextureImages[propdata.filename]:getRGBA (image_x, image_y)
 	if a >= 0.05 then
@@ -706,7 +706,7 @@ function LoadSingleImage (filename)
 	-- Loads each image only once.
 	if not LoadedImages[filename] then
 		local image = MOAITexture.new ()
-		image:load (_imgFolder .. filename)
+		image:load (_imgFolder_ .. filename)
 		local w, h = image:getSize ()
 		local deck = MOAIGfxQuad2D.new ()
 		deck:setTexture (image)

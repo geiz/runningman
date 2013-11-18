@@ -25,7 +25,7 @@ player.body.tag = 'player'
 player.body:setFixedRotation( false )
 player.body:setMassData( 80 )
 player.body:resetMassData()
-player.body.velocity = _playerDefaultVelocity
+player.body.velocity = _playerDefaultVelocity_
 
 player.polygon = player.body:addPolygon( player.verts )
 player.rect = player.body:addRect( -10, -10, 10, 10 )
@@ -35,7 +35,7 @@ player.rect:setSensor( true )
 
 -------- player body imgs/settings
 --player.body.prop = newImg("hero1-idle.png",10,16)
-player.body.anim = newTileAnim(_playerAnim, 15, 15, 8, 8)
+player.body.anim = newTileAnim(_playerAnim_, 15, 15, 8, 8)
 --player.body.prop = newImg("hero1-idle.png",10,16)
 player.body.anim:setParent(player.body)
 player.body.direction = 0 -- 0 = left, 1 = right

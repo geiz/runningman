@@ -6,12 +6,13 @@
 
 _scale_ = 10
 _gravity_ = 20
-_stage_ = {w = 960, h = 640} -- Pixels in the actual game
+_stage_ = {w = 960, h = 640} -- Pixels in the game
+_screen_ = {w = 480, h = 320} -- Pixels of the display game window
 _debugMode_ = true -- enables debug in debug.lua
 _fontScale_ = 20 -- fonts for debug
 
 _imgFolder_ = "images/"
-_animFolder_ = _imgFolder.."animations/"
+_animFolder_ = _imgFolder_.."animations/"
 _audioFolder_ = "audio/"
 _videoFolder_ = "video/"
 _dataFolder_ = "data/"
@@ -37,9 +38,12 @@ _eLength_ = 5
 _eRadius_ = 10
 
 
-
 _worldFriction_ = 0.2
 
 
 _charCode_ = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _+-()[]{}|\/?.,<>!~`@#$%^&*\'":;'
-_fontScale_ = _screen.h/_stage.h
+_fontScale_ = _screen_.h/_stage_.h
+
+function extend (fileName)
+	dofile("scripts/"..fileName)
+end

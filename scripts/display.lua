@@ -5,7 +5,7 @@
 -- This file contains all of the required display functions
 ----------------------------------------------------------------
 
-
+viewport = OpenViewport ('Metal Slug + FTL', _stage_.w, _stage_.h)
 
 -- setup layers
 layer = MOAILayer2D.new() -- Main playable, interactable layers
@@ -17,6 +17,7 @@ layerBG1 = MOAILayer2D.new() -- "Farthest" Background Layer
 layerBG2 = MOAILayer2D.new()
 layerBG3 = MOAILayer2D.new() -- "closest" Background Layer (still behind _layer)
  
+
 
 function InitLayers ()
 	layer:setViewport(viewport)
@@ -34,7 +35,7 @@ end
 
 -- Creates and returns a static prop
 function newImg (imgName, width, height)
-    imgPath = _imgFolder .. imgName
+    imgPath = _imgFolder_ .. imgName
     if width == nil or height == nil then
         local img = MOAIImage.new()
         img:load (imgPath)
@@ -54,7 +55,7 @@ end
 ---- width, height = how big you want each frame to show as.
 ---- animLengthFrames, animHeightFrames = animation frame tiles horizontally and vertically in tilemap.
 function newTileAnim (animName, width, height, animLengthFrames, animHeightFrames)
-    animPath = _animFolder .. animName
+    animPath = _animFolder_ .. animName
     if animLengthFrames == nil or animHeightFrames == nil then
         print("Error: Specify imgName for function newTileAnim (imgName, width, height, animLengthFrames, animHeightFrames)")
     end
