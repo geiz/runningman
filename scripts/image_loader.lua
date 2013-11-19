@@ -7,9 +7,9 @@ function CreateProp (type_name)
 	local config = ConfigTable[type_name]
 
 	-- Figure out which folder the image is in
-	local folder = _imgFolder
+	local folder = _imgFolder_
 	if isAnim (type_name) then
-		folder = _animFolder
+		folder = _animFolder_
 	end
 	
 	-- Create a prop
@@ -83,9 +83,9 @@ function LoadImage (name)
 	end
 
 	-- Figure out which folder the image is in
-	local folder = _imgFolder
+	local folder = _imgFolder_
 	if isAnim (name) then
-		folder = _animFolder
+		folder = _animFolder_
 	end
 
 	local image = LoadImageRaw (folder .. config.filename)
