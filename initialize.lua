@@ -19,18 +19,8 @@ _dataFolder_ = "data/"
 _scriptFolder_ = "scripts/"
 
 -- _PlayerInit_ Values
-_playerAnim_ = "numbers.png"
 _playerDefaultVelocity_ = 200
 
-
-_bgImg_ = "testMap.png"
-_tree1_ = "tree-1.png"
-_tree2_ = "tree-2.png"
-_tree3_ = "tree-3.png"
-_rock1_ = "rock-1.png"
-_mountain1_ = "mountain-1.png"
-_mountain2_ = "mountain-2.png"
-_bulletTexture_ = "explosion.png"
 
 _bulletRadius_ = 5
 
@@ -46,4 +36,14 @@ _fontScale_ = _screen_.h/_stage_.h
 
 function extend (fileName)
 	dofile("scripts/"..fileName)
+end
+
+function error (message, ...)
+-- Writes a message to stderr. If extra arguments are supplied, the message is formatted.
+	local arg_count = select ('#', ...)
+	if arg_count > 0 then
+		io.stderr:write (string.format (message, ...) .. "\n")
+	else
+		io.stderr:write (message .. "\n")
+	end
 end

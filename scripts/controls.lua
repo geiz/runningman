@@ -9,11 +9,11 @@ function onKeyboard( key, down )
     -- 'a' key
     if key == 97 then
         player.move.left = down
-        player.body.anim:setScl(-1,1)
+        player.body.anim:setScl (-player.body.anim.basicScale, player.body.anim.basicScale)
     -- 'd' key
     elseif key == 100 then
         player.move.right = down
-        player.body.anim:setScl(1,1)
+        player.body.anim:setScl (player.body.anim.basicScale, player.body.anim.basicScale)
     end
 
     if key == 102 and down == true then

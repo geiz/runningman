@@ -6,21 +6,21 @@ end
 dofile("initialize.lua")
 
 extend ("util.lua")
+extend ("image_loader.lua")
 extend ("display.lua")
-background = newImg (_bgImg_)
+background = CreateProp ("bgImg")
 --layer:insertProp(background)
 extend ("entity.lua")
 extend ("world.lua")
 extend ("player.lua")
 extend ("enemies.lua")
 
-
 InitLayers ()
 
 layer:setBox2DWorld(world) -- box2D physics for the main playable layer
 
 isBulletTrue = false   
-explosionProp = newImg ("explosion.png",6,6)
+explosionProp = CreateProp ("explosion1")
 
 layer:insertProp(player.body.anim)  
 startTileAnim(player.body.anim,8,8,6 )

@@ -67,7 +67,7 @@ function ()
             
 
             bulletsLength = bulletsLength + 1
-            bulletsImg[bulletsLength] = newImg(_bulletTexture_, 10, 10)
+            bulletsImg[bulletsLength] = CreateProp ("bullet")
             layer:insertProp(bulletsImg[bulletsLength])
     
             local pvx, pvy = player.body:getLinearVelocity()

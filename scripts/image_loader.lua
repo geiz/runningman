@@ -3,8 +3,15 @@ local loadedDecks = {}
 local loadedImages = {}
 
 function CreateProp (type_name)
+-- Creates a prop with the given type_name, where type_name is a key in
+-- the image config table.
+
 	-- Get configuration info about this prop type
 	local config = ConfigTable[type_name]
+	if not config then
+		error ("ERROR: Prop configuration '%s' is unknown in CreateProp", type_name)
+		return nil
+	end
 
 	-- Figure out which folder the image is in
 	local folder = _imgFolder_
@@ -15,14 +22,18 @@ function CreateProp (type_name)
 	-- Create a prop
 	local prop = MOAIProp2D.new()
 	prop:setDeck (LoadTextureAsDeck (folder .. config.filename, config.width, config.height))
-	prop:setScl (config.scale or 1)
+	
+	-- Deal with scaling
+	prop.basicScale = config.scale or 1
+	prop:setScl (prop.basicScale)
 	
 	-- Set default animation frame
-	local default_anim = t.default or t.idle
+	local default_anim = config.default or config.idle
 	if default_anim then
 		prop:setIndex (default_anim.first_frame or 1)
 	else
 		prop:setIndex (1)
+	end
 	
 	return prop
 end
