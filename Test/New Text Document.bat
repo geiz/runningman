@@ -1,0 +1,2 @@
+@moai imgTest.lua
+pause
