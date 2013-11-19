@@ -3,6 +3,7 @@ dofile ('editor_ui.lua')
 dofile ('game_ui.lua')
 
 _imgFolder = "assets/images/"
+_animFolder = "assets/animations/"
 
 -- Create the viewport and primary camera
 view_w, view_h, tray_h = 960, 640, 80
