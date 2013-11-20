@@ -2,7 +2,7 @@
 	TargetSurface
 	camera
 	viewport
-	priority (a number)
+	_priority_ (a number)
 	tray (a Surface)
 
 	PhysicsEditorOn (a boolean)
@@ -113,8 +113,8 @@ function editorMouseClick ( down )
 				SetEditorMode (NextMode [EditMode])
 			else
 				-- We're picking up a prop from a game surface
-				pick.prop:setPriority ( priority )
-				priority = priority + 1
+				_priority_ = _priority_ + 1
+				pick.prop:setPriority ( _priority_ )
 				pick.prop:seekScl ( 1.0, 1.0, 0.125, MOAIEaseType.EASE_IN )
 			end
 		end
@@ -128,12 +128,15 @@ function editorMouseClick ( down )
 						PhysicsEditorSurface:clearProps ()
 						PhysicsEditorBackground:clearProps ()
 						PhysicsEditorCamera:setLoc (0,0)
-						local prop = CopyToLayer (pick, PhysicsEditorBackground, 0, 0)
+						local prop = PlaceInLayer (PhysicsEditorBackground, CreateProp (pick.name), 0, 0)
 						PlacePhysicsNodes (PhysicsEditorSurface, PhysicsEditorBackground, prop)
 					else
 						-- Dropping an ordinary game prop into game world
 						local x, y = TargetSurface.layer:wndToWorld ( mouse_x, mouse_y )
-						Snap (CopyToLayer (pick, TargetSurface, x, y))
+						local prop = CreateProp (pick.name)
+						_priority_ = _priority_ + 1
+						prop:setPriority (_priority_)
+						Snap (PlaceInLayer (TargetSurface, prop, x, y))
 					end
 				end
 				-- Move back to tray

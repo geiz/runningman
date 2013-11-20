@@ -24,6 +24,18 @@ return {
 			last_frame = 3
 		}
 	},
+	
+	tileG = {
+		filename = "tileG.png",
+	},
+
+	tileB1 = {
+		filename = "tileB1.png",
+	},
+
+	tileB2 = {
+		filename = "tileB2.png",
+	},
 
 	bgImg = {
 		filename = "testMap.png",
@@ -53,8 +65,28 @@ return {
 		filename = "tree-1.png"
 	},
 
+	tree2 = {
+		filename = "tree-2.png"
+	},
+
+	tree3 = {
+		filename = "tree-3.png"
+	},
+
 	rock1 = {
 		filename = "rock-1.png"
+	},
+	
+	mountain1 = {
+		filename = "mountain-1.png"
+	},
+	
+	mountain2 = {
+		filename = "mountain-2.png"
+	},
+	
+	cohart = {
+		filename = "cohart96.png"
 	},
 	
 	squirrel = {

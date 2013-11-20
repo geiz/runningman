@@ -1,5 +1,6 @@
 dofile ("initialize.lua")
 extend ('util.lua')
+extend ('image_loader.lua')
 extend ('editor_ui.lua')
 extend ('game_ui.lua')
 
@@ -18,17 +19,18 @@ BackgroundSurface1.layer:setClearColor (1,1,1)  -- Set this surface to clear the
 tray = CreateTray (64, 80)
 PositionTray (tray, "BOTTOM", viewport)
 
-priority = LoadLevel ('working_levels/level001.lv')
+_priority_ = LoadLevel ('working_levels/level001.lv')
 
 function GetPropInfo (surface)
 	local all = {}
 	for data in pairs(surface.props) do
-		local out = {
+		--[[local out = {
 			w = data.w, h = data.h,
 			filename = data.filename
 		}
+		out.scale = data.prop:getScl ()]]
+		local out = { name = data.name }
 		out.x, out.y = data.prop:getLoc ()
-		out.scale = data.prop:getScl ()
 		out.priority = data.prop:getPriority ()
 		table.insert (all, out)
 	end
@@ -91,19 +93,19 @@ end
 function SetEditorMode (m)
 	EditMode = m
 	if m == "G" then
-		ReplaceItemImage (modeTile, "tileG.png")
+		ReplaceItemImage (modeTile, "tileG")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, GameSurface, tray)
 		TargetSurface = GameSurface
 	end
 	if m == "B2" then
-		ReplaceItemImage (modeTile, "tileB2.png")
+		ReplaceItemImage (modeTile, "tileB2")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, tray)
 		TargetSurface = BackgroundSurface2
 	end
 	if m == "B1" then
-		ReplaceItemImage (modeTile, "tileB1.png")
+		ReplaceItemImage (modeTile, "tileB1")
 		ResetTray (tray, "basic", "gametile")
 		ShowLayers (BackgroundSurface1, tray)
 		TargetSurface = BackgroundSurface1
@@ -112,13 +114,13 @@ end
 
 NextMode = { B1="B2", B2="G", G="B1" }
 
-modeTile = LoadProp ("basic", "tileG.png")
-LoadProp ("gametile", "cohart96.png")
-LoadProp ("gametile", "rock-1.png")
-LoadProp ("gametile", "mountain-1.png")
-LoadProp ("gametile", "mountain-2.png")
-LoadProp ("gametile", "tree-1.png")
-LoadProp ("gametile", "tree-2.png")
-LoadProp ("gametile", "tree-3.png")
+modeTile = LoadProp ("basic", "tileG")
+LoadProp ("gametile", "cohart")
+LoadProp ("gametile", "rock1")
+LoadProp ("gametile", "mountain1")
+LoadProp ("gametile", "mountain2")
+LoadProp ("gametile", "tree1")
+LoadProp ("gametile", "tree2")
+LoadProp ("gametile", "tree3")
 
 SetEditorMode ("B1")

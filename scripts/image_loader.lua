@@ -6,10 +6,27 @@ function CreateProp (type_name)
 -- Creates a prop with the given type_name, where type_name is a key in
 -- the image config table.
 
+	if not ConfigTable[type_name] then
+		error ("ERROR: invalid type_name '%s' passed to CreateProp.\n" ..
+			"    Perhaps an entry in image_config.lua is missing?", tostring (type_name))
+		return nil
+	end
+
+	local prop = MOAIProp2D.new()
+	SwitchDeck (prop, type_name)
+	
+	return prop
+end
+
+function SwitchDeck (prop, type_name)
+-- Sets the prop to the given config type.
+-- Makes any necessary adjustments to the prop's parameters.
+
 	-- Get configuration info about this prop type
 	local config = ConfigTable[type_name]
-	if not config then
-		error ("ERROR: Prop configuration '%s' is unknown in CreateProp", type_name)
+	if not ConfigTable[type_name] then
+		error ("ERROR: invalid type_name '%s' passed to SwitchDec.\n" ..
+			"    Perhaps an entry in image_config.lua is missing?", tostring (type_name))
 		return nil
 	end
 
@@ -18,10 +35,10 @@ function CreateProp (type_name)
 	if isAnim (type_name) then
 		folder = _animFolder_
 	end
-	
-	-- Create a prop
-	local prop = MOAIProp2D.new()
-	prop:setDeck (LoadTextureAsDeck (folder .. config.filename, config.width, config.height))
+
+	-- Load the deck
+	local deck = LoadTextureAsDeck (folder .. config.filename, config.width, config.height)
+	prop:setDeck (deck)
 	
 	-- Deal with scaling
 	prop.basicScale = config.scale or 1
@@ -35,7 +52,9 @@ function CreateProp (type_name)
 		prop:setIndex (1)
 	end
 	
-	return prop
+	-- Set misc. info
+	prop.w, prop.h = deck.w, deck.h
+	prop.name = type_name
 end
 
 function isAnim (type_name)
@@ -79,18 +98,22 @@ function LoadTextureAsDeck (filename, tile_w, tile_h)
 	deck:setRect (-tile_w/2, -tile_h/2, tile_w/2, tile_h/2)
 	loadedDecks[filename] = deck
 	
+	-- Set custom fields
+	deck.w = tile_w
+	deck.h = tile_h
+	
 	return deck
 end
 
 function LoadImage (name)
 -- Loads an image from a file. Returns a MOAIImage.
 -- If the name parameter is a type name in the config file, then load its image.
---   Otherwise, name is interpreted as a raw file name (see LoadImageRaw).
+--   Otherwise, name is interpreted as a file name in the images folder.
 
 	-- Get configuration info about this prop type
 	local config = ConfigTable[name]
 	if not config then
-		return LoadImageRaw (name)
+		return LoadImageRaw (_imgFolder_ .. name)
 	end
 
 	-- Figure out which folder the image is in
@@ -109,5 +132,8 @@ function LoadImageRaw (filename)
 	-- Load the image
 	loadedImages[filename] = MOAIImage.new()
 	loadedImages[filename]:load (filename)
+	-- Set custom fields
+	loadedImages[filename].w, loadedImages[filename].h = loadedImages[filename]:getSize()
+	
 	return loadedImages[filename]
 end

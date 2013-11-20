@@ -122,19 +122,8 @@ function NewTray (tray_h, viewport)
 	return t
 end
 
-function ReplaceItemImage (item, newName)
-	-- Make sure an ItemInfo entry exists and its file is loaded
-	if not ItemInfo[newName] then ItemInfo[newName] = { filename = newName } end
-	if not ItemInfo[newName].image then
-		ItemInfo[newName].image = MOAITexture.new ()
-		ItemInfo[newName].image:load (_imgFolder_ .. ItemInfo[newName].filename)
-	end
-	-- Perform replacement and update info
-	copyInto (ItemInfo[newName], item)
-	item.w, item.h = item.image:getSize ()
-	item.deck:setTexture ( item.image )
-	item.deck:setRect ( -item.w/2, -item.h/2, item.w/2, item.h/2 )
-	return item
+function ReplaceItemImage (prop, name)
+	SwitchDeck (prop, name)
 end
 
 -- Snaps the given item's position to an 8x8 pixel grid, or (optionally) 16 pixels at ground level.
@@ -276,14 +265,11 @@ local SingleQuads = {}
 
 function LoadPropsFromTable (t, surface)
 	local max_priority = 0
-	for i, data in ipairs (t) do
-		x = LoadSingleImage (data.filename)
-		data.image = x.image
-		data.w = x.w
-		data.h = x.h
-		item = CopyToLayer (data, surface, data.x, data.y)
-		item.prop:setPriority (data.priority)
-		max_priority = math.max (max_priority, data.priority)
+	for i, data in ipairs (t or {}) do
+		local prop = CreateProp (data.name)
+		prop:setPriority (data.priority)
+		PlaceInLayer (surface, prop, data.x, data.y)
+		max_priority = math.max (max_priority, data.priority + 1)
 	end
 	return max_priority
 end
@@ -444,27 +430,19 @@ function PositionTray (tray, location, viewport)
 	end
 end
 
--- Creates a new prop instance from the given propdata.
-function CopyToLayer (propdata, layerdata, x, y)
-	-- Make a new deck and a new prop, but copy everything else.
-	local item = copy (propdata)
-	item.deck = MOAIGfxQuad2D.new ()
-	item.deck:setTexture ( item.image )
-	item.deck:setRect ( -item.w/2, -item.h/2, item.w/2, item.h/2 )
-	item.prop = MOAIProp2D.new ()
-	item.prop:setDeck ( item.deck )
-	if x and y then item.prop:setLoc (x, y) end
-	item.prop.data = item
-	layerdata.partition:insertProp (item.prop)
-	item.layer = layerdata.layer
-	item.partition = layerdata.partition
-	item.layerdata = layerdata
-	-- Index prop
-	layerdata.props[item] = true
-	if not propdata.instances then propdata.instances = {} end
-	propdata.instances[item] = true
-
-	return item
+function PlaceInLayer (surface, prop, x, y)
+	prop:setLoc (x, y)
+	surface.partition:insertProp (prop)
+	surface.props[prop] = true
+	
+	-- Custom parameters. TODO: remove these, if possible
+	prop.prop = prop
+	prop.data = prop
+	prop.layerdata = surface
+	prop.layer = surface.layer
+	prop.partition = surface.partition
+	
+	return prop
 end
 
 function CreatePhysicsNodeProp (x, y)
@@ -508,7 +486,7 @@ function CreatePhysicsEdgeProp (physics)
 end
 
 function PlacePhysicsNodes (surface, background_surface, prop)
-	local physics = Physics[prop.filename] or {}
+	local physics = Physics[prop.name] or {}
 	if not physics.nodes then
 		-- Create a default set of nodes
 		physics.nodes = {}
@@ -535,7 +513,7 @@ function PlacePhysicsNodes (surface, background_surface, prop)
 	-- Insert edges into partition
 	background_surface.partition:insertProp (physics.edgeProp.prop)
 	
-	Physics[prop.filename] = physics
+	Physics[prop.name] = physics
 end
 
 -- Removes a prop from its surface
@@ -566,11 +544,7 @@ function AlphaOk (propdata, world_x, world_y)
 	end
 	
 	-- Load image (if not already loaded) and query the correct pixel
-	if not NonTextureImages[propdata.filename] then
-		NonTextureImages[propdata.filename] = MOAIImage.new ()
-		NonTextureImages[propdata.filename]:load (_imgFolder_ .. propdata.filename)
-	end
-	r, g, b, a = NonTextureImages[propdata.filename]:getRGBA (image_x, image_y)
+	r, g, b, a = LoadImage (propdata.name):getRGBA (image_x, image_y)
 	if a >= 0.05 then
 		return true
 	else
@@ -653,9 +627,9 @@ end
 function AddToTray (tray, prop_type)
 	-- Adds a prop of the given type to the tray. Assumes it is not already in the tray.
 	-- Assumes tray.partition is where the prop will be inserted.
-	local prop = prop_type.prop or MOAIProp2D.new ()
-	prop_type.prop = prop
-	prop:setDeck (prop_type.deck)
+	
+	prop_type.prop = prop_type  -- TODO: remove when possible
+	
 	tray.item_size = tray.item_size or 64          -- how big the tray icons should be
 	tray.padding_size = tray.padding_size or 16    -- space between icons
 	tray.propX = tray.propX or -tray.item_size/2   -- ideal position of the next icon
@@ -670,9 +644,9 @@ function AddToTray (tray, prop_type)
 	prop_type.trayX = tray.propX + propW/2
 	prop_type.trayY = tray.propY
 	prop_type.trayScl = idealScl
-	prop:setLoc (prop_type.trayX, prop_type.trayY)
-	prop:setScl (prop_type.trayScl)
-	tray.partition:insertProp (prop)
+	prop_type:setLoc (prop_type.trayX, prop_type.trayY)
+	prop_type:setScl (prop_type.trayScl)
+	tray.partition:insertProp (prop_type)
 	-- Update position for next prop
 	tray.propX = tray.propX + propW + tray.padding_size
 	-- Index backward to access the prop data from the prop itself (for picking)
@@ -689,31 +663,9 @@ function AddSeriesToTray (tray, series_name)
 	end
 end
 
-function LoadProp (series, filename)
-	local data = LoadedImages[filename] or LoadSingleImage(filename)
-	LoadedImages[filename] = data
+function LoadProp (series, name)
+	local prop = CreateProp (name)
 	if not PropsByType[series] then PropsByType[series] = {} end
-	table.insert (PropsByType[series], data)
-	data.series = series
-	data.key = series .. ".." .. filename
-	PropTypes[data.key] = data
-	PropInstances[data.key] = {}
-	return data
-end
-
-function LoadSingleImage (filename)
-	-- Loads an image in a quad, scaled to the image's pixel width/height.
-	-- Loads each image only once.
-	if not LoadedImages[filename] then
-		local image = MOAITexture.new ()
-		image:load (_imgFolder_ .. filename)
-		local w, h = image:getSize ()
-		local deck = MOAIGfxQuad2D.new ()
-		deck:setTexture (image)
-		deck:setRect ( -w/2, -h/2, w/2, h/2 )
-		LoadedImages[filename] = {
-			image = image, w = w, h = h, deck = deck, filename = filename
-		}
-	end
-	return LoadedImages[filename]
+	table.insert (PropsByType[series], prop)
+	return prop
 end
