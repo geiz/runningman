@@ -1,8 +1,5 @@
 -- game.lua
 
-function extend (fileName)
-	dofile("scripts/"..fileName)
-end
 dofile("initialize.lua")
 
 extend ("util.lua")

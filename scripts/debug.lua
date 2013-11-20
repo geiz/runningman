@@ -11,14 +11,13 @@ if _debugMode_ then
     print("Debug Mode Enabled")
         -- Debug Text
     debug = MOAITextBox.new()
-    debug:setRect( -160 * _fontScale_, -100 * _fontScale_, 160 * _fontScale_, 100 * _fontScale_ )
-    debug:setScl( 1 / _fontScale_ )
+    debug:setRect( -_stage_.w/2, -_stage_.h/2, _stage_.w/2, _stage_.h/2 )
     debug:setYFlip( true )
     debug:setColor( 1, 1, 1 )
     debug:setString( 'debug' )
     debug.font = MOAIFont.new()
-    debug.font:load( 'data\\verdana.ttf' )
-    debug.font:preloadGlyphs( _charCode_, math.ceil( 4 * _fontScale_ ), 72 )
+    debug.font:load( 'data/verdana.ttf' )
+    debug.font:preloadGlyphs( _charCode_, _fontScale_ )
     debug:setFont( debug.font )
 
     -- 

@@ -6,8 +6,7 @@
 
 _scale_ = 10
 _gravity_ = 20
-_stage_ = {w = 960, h = 640} -- Pixels in the game
-_screen_ = {w = 480, h = 320} -- Pixels of the display game window
+_stage_ = {w = 960, h = 640} -- Pixels in the game (adjustment of display size is automatic)
 _debugMode_ = true -- enables debug in debug.lua
 _fontScale_ = 20 -- fonts for debug
 
@@ -32,7 +31,6 @@ _worldFriction_ = 0.2
 
 
 _charCode_ = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _+-()[]{}|\/?.,<>!~`@#$%^&*\'":;'
-_fontScale_ = _screen_.h/_stage_.h
 
 function extend (fileName)
 	dofile("scripts/"..fileName)
