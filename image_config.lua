@@ -103,6 +103,7 @@ return {
 			first_frame = 5,
 			last_frame = 8
 		},
+		default = { first_frame = 47 }
 	},
 	
 	hero1 = {

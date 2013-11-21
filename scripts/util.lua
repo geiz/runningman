@@ -534,14 +534,20 @@ function RemoveProp (propdata)
 end
 
 function AlphaOk (propdata, world_x, world_y)
+	local w = propdata.w * propdata.basicScale
+	local h = propdata.h * propdata.basicScale
 	local center_x, center_y = propdata.prop:getLoc ()
-	local image_x = world_x - (center_x - propdata.w / 2)  -- assumes scale is 1.
-	local image_y = propdata.h-(world_y - center_y + propdata.h / 2)  -- inverted y-axis.
+	local box_x = world_x - (center_x - w / 2)
+	local box_y = h - (world_y - center_y + h / 2)  -- inverted y-axis.
 	
-	-- Check against width/height to see if inside image
-	if image_x < 0 or image_y < 0 or image_x >= propdata.w or image_y >= propdata.h then
+	-- Check against width/height to see if inside prop boundaries
+	if box_x < 0 or box_y < 0 or box_x >= w or box_y >= h then
 		return false
 	end
+	
+	-- Translate coordinates according to the current animation frame
+	local image_x, image_y = propdata:animCoordImage (
+		box_x / propdata.basicScale, box_y / propdata.basicScale)
 	
 	-- Load image (if not already loaded) and query the correct pixel
 	r, g, b, a = LoadImage (propdata.name):getRGBA (image_x, image_y)

@@ -80,7 +80,7 @@ function editorMouseMove ( x, y )
 	if pick then
 		world_x, world_y = pick.layer:wndToWorld ( mouse_x, mouse_y )
 		prev_x, prev_y = pick.layer:wndToWorld ( old_x, old_y )
-		pick.prop:addLoc ( world_x - prev_x, world_y - prev_y )
+		pick:addLoc ( world_x - prev_x, world_y - prev_y )
 	end
 	
 	-- Move a layer along with mouse pointer
@@ -114,8 +114,8 @@ function editorMouseClick ( down )
 			else
 				-- We're picking up a prop from a game surface
 				_priority_ = _priority_ + 1
-				pick.prop:setPriority ( _priority_ )
-				pick.prop:seekScl ( 1.0, 1.0, 0.125, MOAIEaseType.EASE_IN )
+				pick:setPriority ( _priority_ )
+				pick:seekScl ( pick.basicScale, pick.basicScale, 0.125, MOAIEaseType.EASE_IN )
 			end
 		end
 	else
@@ -140,8 +140,8 @@ function editorMouseClick ( down )
 					end
 				end
 				-- Move back to tray
-				pick.prop:seekLoc ( pick.trayX, pick.trayY, 0.125, MOAIEaseType.EASE_IN )
-				pick.prop:seekScl ( pick.trayScl, pick.trayScl, 0.125, MOAIEaseType.EASE_IN )
+				pick:seekLoc ( pick.trayX, pick.trayY, 0.125, MOAIEaseType.EASE_IN )
+				pick:seekScl ( pick.trayScl, pick.trayScl, 0.125, MOAIEaseType.EASE_IN )
 			else
 				if PhysicsEditorOn then
 					-- Dropping a physics node
@@ -153,7 +153,7 @@ function editorMouseClick ( down )
 						Snap ( pick )
 					else
 						-- Prop dragged back to tray. Remove from level.
-						RemoveProp (pick)
+						RemoveProp ( pick )
 					end
 				end
 			end

@@ -47,13 +47,28 @@ function SwitchDeck (prop, type_name)
 	-- Set default animation frame
 	local default_anim = config.default or config.idle
 	if default_anim then
-		prop:setIndex (default_anim.first_frame or 1)
+		prop.first_frame = default_anim.first_frame or 1
+		prop.last_frame = default_anim.last_frame or prop.first_frame
 	else
-		prop:setIndex (1)
+		prop.first_frame = 1
+		prop.last_frame = 1
+	end
+	prop:setIndex (prop.first_frame)
+	
+	-- Function to translate image-space coordinates according to animation frame.
+	function prop:animCoordImage (x, y)
+		-- Find out which frame of animation we're on, and transform accordingly.
+		local index = self:getIndex ()
+		local row = math.floor ((index - 1) / self.tiles_wide) % self.tiles_high
+		local col = (index - 1) % self.tiles_wide
+		return x + col * self.w, y + row * self.h
 	end
 	
 	-- Set misc. info
 	prop.w, prop.h = deck.w, deck.h
+	prop.tiles_wide = deck.tiles_wide
+	prop.tiles_high = deck.tiles_high
+	prop.deck = deck
 	prop.name = type_name
 end
 
@@ -101,6 +116,8 @@ function LoadTextureAsDeck (filename, tile_w, tile_h)
 	-- Set custom fields
 	deck.w = tile_w
 	deck.h = tile_h
+	deck.tiles_wide = tiles_wide
+	deck.tiles_high = tiles_high
 	
 	return deck
 end
@@ -121,19 +138,33 @@ function LoadImage (name)
 	if isAnim (name) then
 		folder = _animFolder_
 	end
-
+	
 	local image = LoadImageRaw (folder .. config.filename)
 	return image
 end
 
-function LoadImageRaw (filename)
+function LoadImageRaw (filename, tile_w, tile_h)
 	-- Has this image already been loaded?
 	if loadedImages[filename] then return loadedImages[filename] end
-	-- Load the image
-	loadedImages[filename] = MOAIImage.new()
-	loadedImages[filename]:load (filename)
-	-- Set custom fields
-	loadedImages[filename].w, loadedImages[filename].h = loadedImages[filename]:getSize()
 	
-	return loadedImages[filename]
+	-- Load the image
+	local image = MOAIImage.new()
+	image:load (filename)
+
+	-- Compute tile size and tiles across
+	local image_w, image_h = image:getSize()
+	
+	tile_w = tile_w or image_w
+	tile_h = tile_h or image_h
+
+	local tiles_wide = math.floor (image_w / tile_w)
+	local tiles_high = math.floor (image_h / tile_h)
+	
+	-- Set custom fields
+	image.w, image.h = tile_w, tile_h
+	image.tiles_wide = tiles_wide
+	image.tiles_high = tiles_high
+	
+	loadedImages[filename] = image
+	return image
 end

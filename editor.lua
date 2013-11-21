@@ -116,6 +116,7 @@ NextMode = { B1="B2", B2="G", G="B1" }
 
 modeTile = LoadProp ("basic", "tileG")
 LoadProp ("gametile", "cohart")
+LoadProp ("gametile", "squirrel")
 LoadProp ("gametile", "rock1")
 LoadProp ("gametile", "mountain1")
 LoadProp ("gametile", "mountain2")
