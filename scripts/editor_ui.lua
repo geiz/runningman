@@ -14,6 +14,7 @@
 mouse_x = 0
 mouse_y = 0
 
+
 function ChainInEditorUI ()
 	pick = nil
 	old_x = mouse_x
@@ -80,7 +81,7 @@ function editorMouseMove ( x, y )
 	if pick then
 		world_x, world_y = pick.layer:wndToWorld ( mouse_x, mouse_y )
 		prev_x, prev_y = pick.layer:wndToWorld ( old_x, old_y )
-		pick:addLoc ( world_x - prev_x, world_y - prev_y )
+		pick.prop:addLoc ( world_x - prev_x, world_y - prev_y )
 	end
 	
 	-- Move a layer along with mouse pointer
@@ -160,7 +161,7 @@ function editorMouseClick ( down )
 			pick = nil
 			
 			
-			SaveLevel ('working_levels/level001.lv')
+			SaveLevel (_levelFolder_..'level001.lv')
 		end
 	end
 end

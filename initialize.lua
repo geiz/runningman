@@ -14,12 +14,13 @@ _imgFolder_ = "images/"
 _animFolder_ = _imgFolder_.."animations/"
 _audioFolder_ = "audio/"
 _videoFolder_ = "video/"
-_dataFolder_ = "data/"
+_dataFolder_ = "data/" -- referene data files (save, load, etc) 
 _scriptFolder_ = "scripts/"
+_levelFolder_ = "working_levels/"
+_levelFile_ = "level001.lv"
 
 -- _PlayerInit_ Values
 _playerDefaultVelocity_ = 200
-
 
 _bulletRadius_ = 5
 

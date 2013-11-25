@@ -8,7 +8,7 @@ extend ("display.lua")
 background = CreateProp ("bgImg")
 --layer:insertProp(background)
 extend ("entity.lua")
-extend ("world.lua")
+extend ("world.lua") -- loads the world
 extend ("player.lua")
 extend ("enemies.lua")
 
@@ -131,10 +131,10 @@ platformThread:run(
 end )
 ]]
 
-    
+ 
 extend ("debug.lua")
-extend ("controls.lua")
 extend ("actions.lua")
+extend ("controls.lua")
 extend ("engine.lua")
 
 

@@ -8,6 +8,7 @@
 function onKeyboard( key, down )
     -- 'a' key
     if key == 97 then
+        print(player.x)
         player.move.left = down
         player.body.anim:setScl (-player.body.anim.basicScale, player.body.anim.basicScale)
     -- 'd' key
@@ -41,12 +42,8 @@ function onKeyboard( key, down )
     end
 
     -- jump
-    if key == 119 and down and ( player.onGround or not player.doubleJumped ) then
-        player.body:setLinearVelocity( player.body:getLinearVelocity(), 0 )
-        player.body:applyLinearImpulse( 0, 80 )
-        if not player.onGround then
-            player.doubleJumped = true
-        end
+    if key == 119 and down then
+        PlayerJump()
     end
 end
 

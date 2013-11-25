@@ -1,2 +1,2 @@
-@moai game.lua
+@moai scripts/game.lua
 pause

@@ -19,12 +19,12 @@ if player.dash then
 end
 
 function bombHandler (x, y)
-    layer:insertProp(player.attack.timedbomb.prop)
+    GameSurface.layer:insertProp(player.attack.timedbomb.prop)
     bombTimer = newTimer(2, function()
                                     explosionProp:setLoc(x,y)
-                                    layer:insertProp(explosionProp)
+                                    GameSurface.layer:insertProp(explosionProp)
                                     --
-                                    layer:removeProp(player.attack.timedbomb.prop)
+                                    GameSurface.layer:removeProp(player.attack.timedbomb.prop)
                                     resolveTimer = newTimer(0.5, function() 
                                                                     layer:removeProp(explosionProp) 
                                                                     --player.attack.timedbomb.attacking = false
@@ -34,14 +34,16 @@ function bombHandler (x, y)
                                 , false)
 end
 
------------------
-
-
-function makeBullet()
-    local bullet = MOAIProp2D.new()
-    bullet:setDeck( bulletProp )
-    layer:insertProp( bullet )
+function PlayerJump ()
+    if (player.onGround or not player.doubleJumped) then
+        player.body:setLinearVelocity( player.body:getLinearVelocity(), 0 )
+        player.body:applyLinearImpulse( 0, 180 )
+        if not player.onGround then
+            player.doubleJumped = true
+        end
+    end
 end
+-----------------
 
 -- Fires a projectile from location of host entity
 -- vx, vy are velocity in the x and y directions respectively

@@ -31,12 +31,11 @@ function()
 end )
 
 -- removes an index from array and shifts everything else above index down 1.
-function removeFromIndex( array, arrayLength, index )
-	for i=index, arrayLength-1 do
+function removeFromIndex( array, index )
+	for i=index, #array-1 do
 	 	array[i] = array[i+1]
 	end
-    array[arrayLength] = nil
-    return arrayLength - 1
+    array[#array] = nil
 end
 
 
@@ -55,7 +54,6 @@ end
 
 bullets = {}
 bulletsImg = {}
-bulletsLength = 0
 bulletMAXdist = 100
             -- Bullet motion
 playerActionThread = MOAICoroutine.new()
@@ -65,31 +63,30 @@ function ()
     	local px,py = player.body:getPosition()
         if (isBulletTrue == true) then
             
-
-            bulletsLength = bulletsLength + 1
-            bulletsImg[bulletsLength] = CreateProp ("bullet")
-            layer:insertProp(bulletsImg[bulletsLength])
+            bulletsImg[#bullets] = CreateProp ("bullet")
+            layer:insertProp(bulletsImg[#bullets])
     
             local pvx, pvy = player.body:getLinearVelocity()
 
-            bullets[bulletsLength] = world:addBody( MOAIBox2DBody.KINEMATIC, px, py )
+            bullets[#bullets] = world:addBody( MOAIBox2DBody.KINEMATIC, px, py )
             --
             if player.body.direction == 0 then
-            	bullets[bulletsLength]:setLinearVelocity(-150+pvx,0+pvy)
+            	bullets[#bullets]:setLinearVelocity(-150+pvx,0+pvy)
             elseif player.body.direction == 1 then
-            	bullets[bulletsLength]:setLinearVelocity(150+pvx, 0+pvy)
+            	bullets[#bullets]:setLinearVelocity(150+pvx, 0+pvy)
             else
             	print("invalid player direction detected")
             end
             --
            
-            bulletsImg[bulletsLength]:setParent(bullets[bulletsLength])
+            bulletsImg[#bullets]:setParent(bullets[#bullets])
             
         end
         isBulletTrue = false     
 
-        -- Not clearing imgs when shooting more than one at a time
-        for k,v in pairs (bullets) do -- for every bullet
+        -- still working on this
+        tempBullets = bullets
+        for k,v in pairs (tempBullets) do -- for every bullet
         	local bx, by = bullets[k]:getPosition()
             for s,t in ipairs (e) do -- for every enemy
                 ex,ey = e[s].body:getPosition() 
@@ -98,19 +95,19 @@ function ()
                     
                     layer:removeProp(bulletsImg[k])  
                     bullets[k]:destroy()  
-                    bulletsLength = removeFromIndex(bullets, bulletsLength, k)
+                    removeFromIndex(bullets, k)
 
 
                     layer:removeProp (e[s].animIdle)
                     e[s].body:destroy()
-                    _eLength_ = removeFromIndex(e, _eLength_, s)
+                    removeFromIndex(e, s)
                 end
             end
 			if math.abs(bx-px) > bulletMAXdist or math.abs(by-py) > bulletMAXdist then            
                 layer:removeProp(bulletsImg[k])  
                 bullets[k]:destroy()  
-                bulletsLength = removeFromIndex(bullets, bulletsLength, k)
-                 print(bulletsLength)
+                removeFromIndex(bullets, k)
+                print(#bullets)
             end
         end        
         coroutine.yield()

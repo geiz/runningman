@@ -4,6 +4,8 @@
 -- This file contains all of the world functions
 ----------------------------------------------------------------
 
+--currentLevel = LoadLevel(_levelFolder_.._levelFile_)
+
 -- define layers
 world = MOAIBox2DWorld.new()
 world:setGravity(0, -_gravity_)
@@ -13,6 +15,7 @@ world:setUnitsToMeters(1/_scale_)
 -- setup ground
 ground = {}
 ground.verts1 = {
+-320,50,
 -320,-20,
 320,-20
 }
@@ -27,7 +30,7 @@ ground.body = world:addBody( MOAIBox2DBody.STATIC, 0, -60 )
 ground.body.tag = 'ground'
 ground.fixtures = {
     ground.body:addChain( ground.verts1 ),
-   --ground.body:addChain( ground.verts2 ),
+    --ground.body:addChain( ground.verts2 ),
     --ground.body:addChain( ground.verts3 ),
     --ground.body:addChain( ground.verts4 )
 }

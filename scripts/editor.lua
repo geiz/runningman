@@ -14,12 +14,13 @@ camera = EditorCamera
 -- Create game surfaces and tray
 GameSurface = CreateLayer (viewport, EditorCamera)
 BackgroundSurface2 = CreateLayer (viewport, EditorCamera, 0.5, 0.85)
-BackgroundSurface1 = CreateLayer (viewport, EditorCamera, 0.25, 0.8)
+BackgroundSurface1 = CreateLayer (viewport, EditorCamera, 0.25, 0.888)
 BackgroundSurface1.layer:setClearColor (1,1,1)  -- Set this surface to clear the screen
 tray = CreateTray (64, 80)
 PositionTray (tray, "BOTTOM", viewport)
 
-_priority_ = LoadLevel ('working_levels/level001.lv')
+--'level001.lv' is moved as global variable in initialize.lua
+_priority_ = LoadLevel (_levelFolder_.._levelFile_)
 
 function GetPropInfo (surface)
 	local all = {}
