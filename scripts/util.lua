@@ -38,7 +38,7 @@ function OpenViewport (window_title, view_w, view_h)
 		view_x_offset + screen_w, view_y_offset + screen_h )
 	viewport:setScale ( view_w, view_h )
 
-	viewport.w, viewport.h = view_w, view_h
+	viewport.w, viewport.h = screen_w, screen_h
 	viewport.x, viewport.y = view_x_offset, view_y_offset
 
 	return viewport
@@ -50,76 +50,6 @@ function SetVisibleLayers (list)
 		if l.background then MOAISim.pushRenderPass (l.background.layer) end
 		MOAISim.pushRenderPass (l.layer)
 	end
-end
-
-function NewLayer (viewport, camera, parallax_x, parallax_y)
-	-- Creates a partition that holds the layer.
-	local partition = MOAIPartition.new ()
-	partition.layer = MOAILayer2D.new ()
-	partition.layer:setViewport (viewport)
-	partition.layer:setCamera (camera)
-	partition.layer:setPartition (partition)
-	partition.partition = partition
-	if parallax_x then
-		parallax_y = parallax_y or 1
-		partition.layer:setParallax (parallax_x, parallax_y)
-	end
-	return partition
-end
-
-function NewTray (tray_h, viewport)
-	local t = {
-		partition = MOAIPartition.new (),
-		layer = MOAILayer2D.new (),
-		camera = MOAICamera2D.new (), -- the tray has its own camera
-		background_layer = MOAILayer2D.new (),
-		items = {},
-		item_count = 0,
-		
-		add = function (self, item, slot)
-			if self.items[item] ~= nil then self:remove (item) end
-			self.items[item] = true
-			item.layer = self.layer
-			item.partition = self.partition
-			if slot then
-				item.slot = slot
-			else
-				item.slot = self.item_count
-				self.item_count = self.item_count + 1
-			end
-			item.trayX, item.trayY = item.slot * tray_h, 0
-			item.trayScl = (tray_h * 0.80) / item.h
-			item.fromTray = true
-			item.prop:setLoc (item.trayX, item.trayY)
-			item.prop:setScl (item.trayScl)
-			self.partition:insertProp (item.prop)
-			return item
-		end,
-		remove = function (self, item)
-			self.items[item] = nil
-			item.layer = nil
-			item.fromTray = nil
-			self.partition:removeProp (item.prop)
-		end,
-		replace = function (self, itemOld, itemNew)
-			self:remove (itemOld)
-			self:add (itemNew, itemOld.slot)
-		end
-	}
-	
-	t.layer:setViewport ( viewport )
-	t.camera:setLoc ( viewport.w/2 - tray_h/2, viewport.h/2 - tray_h/2 )
-	t.layer:setCamera ( t.camera )
-	t.layer:setPartition ( t.partition )
-
-	t.background = NewColorLayer (viewport, 0.25, 0.25, 0.25, 0.5, viewport.w, tray_h)
-	t.background:setLoc ( 0, -viewport.h/2 + tray_h/2 )
-
-	table.insert (ActiveLayers, t)
-	MOAISim.pushRenderPass ( t.background.layer )
-	MOAISim.pushRenderPass ( t.layer )
-	
-	return t
 end
 
 function ReplaceItemImage (prop, name)
@@ -424,7 +354,7 @@ function PositionTray (tray, location, viewport)
 	tray.layer:setViewport ( viewport )
 	if location == "BOTTOM" then
 		tray.camera:setLoc ( viewport.w/2 - tray.h/2, viewport.h/2 - tray.h/2 )
-		tray.background:setLoc ( 0, -viewport.h/2 + tray_h/2 )
+		tray.background:setLoc ( 0, -viewport.h/2 + tray.h/2 )
 	else
 		print ("ERROR: Bad tray location parameter in PositionTray")
 	end
@@ -459,10 +389,11 @@ function CreatePhysicsNodeProp (x, y)
 	prop:setDeck (scriptDeck)
 	prop:setLoc (x, y)
 	
-	local propdata = { w = w, h = h }
-	propdata.prop = prop
-	propdata.prop.data = propdata
-	return propdata
+	prop.w = w
+	prop.h = h
+	prop.prop = prop   -- TODO: remove when ready
+	prop.data = prop
+	return prop
 end
 
 function CreatePhysicsEdgeProp (physics)
@@ -479,25 +410,26 @@ function CreatePhysicsEdgeProp (physics)
 		end)
 	prop:setDeck (scriptDeck)
 	
-	local propdata = {}
-	propdata.prop = prop
-	propdata.prop.data = propdata
-	return propdata
+	prop.prop = prop   -- TODO: remove when ready
+	prop.data = prop
+	return prop
 end
 
 function PlacePhysicsNodes (surface, background_surface, prop)
 	local physics = Physics[prop.name] or {}
 	if not physics.nodes then
 		-- Create a default set of nodes
+		local w = prop.w * prop.basicScale
+		local h = prop.h * prop.basicScale
 		physics.nodes = {}
-		table.insert (physics.nodes, CreatePhysicsNodeProp (-prop.w/2, -prop.h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (-prop.w/2, 0))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (-prop.w/2, prop.h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (0, prop.h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (prop.w/2, prop.h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (prop.w/2, 0))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (prop.w/2, -prop.h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (0, -prop.h/2))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (-w/2, -h/2))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (-w/2, 0))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (-w/2, h/2))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (0, h/2))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (w/2, h/2))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (w/2, 0))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (w/2, -h/2))
+		table.insert (physics.nodes, CreatePhysicsNodeProp (0, -h/2))
 	end
 	if not physics.edgeProp then
 		-- Create a default set of edges

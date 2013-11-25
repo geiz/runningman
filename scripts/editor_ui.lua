@@ -11,6 +11,10 @@
 	-- and editor support functions
 ]]
 
+function xyOverTray (x, y)
+end
+
+
 mouse_x = 0
 mouse_y = 0
 
@@ -98,8 +102,8 @@ function editorMouseMove ( x, y )
 		world_x, world_y = tray.layer:wndToWorld ( mouse_x, mouse_y )
 		prev_x, prev_y = tray.layer:wndToWorld ( old_x, old_y )
 		camera_x = camera_x - (world_x - prev_x)
-		if camera_x < viewport.w/2 - tray_h/2 then
-			camera_x = viewport.w/2 - tray_h/2
+		if camera_x < viewport.w/2 - tray.h/2 then
+			camera_x = viewport.w/2 - tray.h/2
 		end
 		tray.camera:setLoc (camera_x, camera_y)
 	end
@@ -123,7 +127,7 @@ function editorMouseClick ( down )
 		if pick then
 			if pick.layerdata == tray then
 				-- If in main view window, place in layer.
-				if mouse_y < viewport.y + viewport.h - tray_h then
+				if mouse_y < viewport.y + viewport.h - tray.h then
 					if PhysicsEditorOn then
 						-- Replacing the active physics prop with the pick
 						PhysicsEditorSurface:clearProps ()
@@ -149,7 +153,7 @@ function editorMouseClick ( down )
 					--(unfinshed)
 				else
 					-- Dropping an ordinary game prop
-					if mouse_y < viewport.y + viewport.h - tray_h then
+					if mouse_y < viewport.y + viewport.h - tray.h then
 						-- Let go of prop in main window.
 						Snap ( pick )
 					else
@@ -169,7 +173,7 @@ end
 function editorMouseClickRight ( down )
 	if down then
 		-- Scroll main layers or tray layer, depending on click location.
-		if mouse_y < viewport.y + viewport.h - tray_h then
+		if mouse_y < viewport.y + viewport.h - tray.h then
 			scroll_main_layer = true
 		else
 			scroll_tray_layer = true

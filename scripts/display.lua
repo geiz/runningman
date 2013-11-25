@@ -7,6 +7,9 @@
 
 viewport = OpenViewport ('Metal Slug + FTL', _stage_.w, _stage_.h)
 
+camera = MOAICamera2D.new()
+camera:setScl (1 / _stage_scale_)
+
 -- setup layers
 layer = MOAILayer2D.new() -- Main playable, interactable layers
 layerEff = MOAILayer2D.new() -- In front of _layer, displays effects
@@ -29,6 +32,15 @@ function InitLayers ()
 	layerBG2:setViewport(viewport)
 	layerBG3:setViewport(viewport)
 
+	layer:setCamera(camera)
+	layerEff:setCamera(camera)
+	layerDiag:setCamera(camera)
+	layerMenu:setCamera(camera)
+	layerDebug:setCamera(camera)
+	layerBG1:setCamera(camera)
+	layerBG2:setCamera(camera)
+	layerBG3:setCamera(camera)
+	
 	MOAISim.pushRenderPass(layer)
     MOAISim.pushRenderPass(layerBG1)
 end

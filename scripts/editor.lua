@@ -4,11 +4,14 @@ extend ('image_loader.lua')
 extend ('editor_ui.lua')
 extend ('game_ui.lua')
 
+local scale = 1
+
 -- Create the viewport and primary camera
-view_w, view_h, tray_h = 960, 640, 80
-viewport = OpenViewport ('Editor Tool', view_w, view_h)
+view_w, view_h, tray_h = 960, 640, 80*scale
+viewport = OpenViewport ('Editor Tool', view_w*scale, view_h*scale)
 EditorCamera = MOAICamera2D.new ()
-EditorCamera:setLoc ( viewport.w/2, viewport.h/2 - tray_h )
+--EditorCamera:setLoc ( viewport.w/2, viewport.h/2 - tray_h )
+EditorCamera:setScl (1 / scale)
 camera = EditorCamera
 
 -- Create game surfaces and tray
@@ -16,7 +19,7 @@ GameSurface = CreateLayer (viewport, EditorCamera)
 BackgroundSurface2 = CreateLayer (viewport, EditorCamera, 0.5, 0.85)
 BackgroundSurface1 = CreateLayer (viewport, EditorCamera, 0.25, 0.888)
 BackgroundSurface1.layer:setClearColor (1,1,1)  -- Set this surface to clear the screen
-tray = CreateTray (64, 80)
+tray = CreateTray (tray_h * 4/5, tray_h)
 PositionTray (tray, "BOTTOM", viewport)
 
 --'level001.lv' is moved as global variable in initialize.lua
