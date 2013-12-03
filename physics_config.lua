@@ -2,13 +2,14 @@
 
 return {
 	rock1 = {
-		body_type = "STATIC"
+		bodyType = "static",
+		friction = 0.5
 	},
 	hero1 = {
-		body_type = "KINEMATIC",
+		bodyType = "kinematic",
 	},
 	force_slash1 = {
-		body_type = "DYNAMIC",
+		bodyType = "dynamic",
 	}
 }
 

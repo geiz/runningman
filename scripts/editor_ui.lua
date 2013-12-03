@@ -133,7 +133,9 @@ function editorMouseClick ( down )
 						PhysicsEditorSurface:clearProps ()
 						PhysicsEditorBackground:clearProps ()
 						PhysicsEditorCamera:setLoc (0,0)
-						local prop = PlaceInLayer (PhysicsEditorBackground, CreateProp (pick.name), 0, 0)
+						local prop = CreateProp (pick.name)
+						--prop.body = CreatePhysicsBody (_world_, pick.name, 0, 0)
+						PlaceInLayer (PhysicsEditorBackground, prop, 0, 0)
 						PlacePhysicsNodes (PhysicsEditorSurface, PhysicsEditorBackground, prop)
 					else
 						-- Dropping an ordinary game prop into game world

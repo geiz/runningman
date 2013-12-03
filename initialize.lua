@@ -15,7 +15,7 @@ _imgFolder_ = "images/"
 _animFolder_ = _imgFolder_.."animations/"
 _audioFolder_ = "audio/"
 _videoFolder_ = "video/"
-_dataFolder_ = "data/" -- referene data files (save, load, etc) 
+_dataFolder_ = "data/" -- reference data files (save, load, etc) 
 _scriptFolder_ = "scripts/"
 _levelFolder_ = "working_levels/"
 _levelFile_ = "level001.lv"
@@ -38,12 +38,18 @@ function extend (fileName)
 	dofile("scripts/"..fileName)
 end
 
+local errorsIssued = {}
+
 function error (message, ...)
 -- Writes a message to stderr. If extra arguments are supplied, the message is formatted.
+-- Only writes each error once.
 	local arg_count = select ('#', ...)
 	if arg_count > 0 then
-		io.stderr:write (string.format (message, ...) .. "\n")
-	else
-		io.stderr:write (message .. "\n")
+		message = string.format (message, ...)
+	end
+	if not errorsIssued[message] then
+		errorsIssued[message] = true
+		io.stderr:write (message)
+		io.stderr:write ("\n")
 	end
 end

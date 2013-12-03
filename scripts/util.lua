@@ -397,17 +397,39 @@ function CreatePhysicsNodeProp (x, y)
 end
 
 function CreatePhysicsEdgeProp (physics)
+
+	-- Callback for typed edge outline
+	local function edgeTypeCallback ()
+		local pointList = GetPhysicsPolygon (physics)
+		local edgeTypes = getEdgeTypes (pointList)
+		for n = 1, #pointList, 2 do
+			local edgeColors = {
+				GROUND = { 0.4, 0.4, 0, 1 },
+				SLOPE = { 1, 1, 0, 1 },
+				WALL = { 0.5, 0.5, 0.5, 1 },
+				CEILING = { 0, 0, 1, 1 }
+			}
+			MOAIGfxDevice.setPenColor (unpack (edgeColors[edgeTypes[n]]))
+			MOAIGfxDevice.setPenWidth ( 2 )
+			local m = n + 2; if m > #pointList then m = 1 end
+			MOAIDraw.drawLine (pointList[n], pointList[n+1], pointList[m], pointList[m+1])
+		end
+	end
+
+	-- Callback for simple polygon outline
+	local function oldPolygonCallback ()
+		MOAIGfxDevice.setPenColor ( 0, 1, 0, 1 )
+		MOAIGfxDevice.setPenWidth ( 2 )
+		local pointList = GetPhysicsPolygon (physics)
+		table.insert (pointList, pointList[1])  -- copy first point to end so polygon is closed
+		table.insert (pointList, pointList[2])
+		MOAIDraw.drawLine (pointList)
+	end
+
 	local prop = MOAIProp2D.new ()
 	local scriptDeck = MOAIScriptDeck.new ()
-	scriptDeck:setRect ( -64, -64, 64, 64 )
-	scriptDeck:setDrawCallback ( function ()
-			MOAIGfxDevice.setPenColor ( 0, 1, 0, 1 )
-			MOAIGfxDevice.setPenWidth ( 2 )
-			local pointList = GetPhysicsPolygon (physics)
-			table.insert (pointList, pointList[1])  -- copy first point to end so polygon is closed
-			table.insert (pointList, pointList[2])
-			MOAIDraw.drawLine (pointList)
-		end)
+	scriptDeck:setRect ( -64, -64, 64, 64 )   -- arbitrary size. Not sure if we need something more accurate?
+	scriptDeck:setDrawCallback ( edgeTypeCallback )
 	prop:setDeck (scriptDeck)
 	
 	prop.prop = prop   -- TODO: remove when ready

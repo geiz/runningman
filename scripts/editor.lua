@@ -1,6 +1,7 @@
 dofile ("initialize.lua")
 extend ('util.lua')
 extend ('image_loader.lua')
+extend ('physics_loader.lua')
 extend ('editor_ui.lua')
 extend ('game_ui.lua')
 
