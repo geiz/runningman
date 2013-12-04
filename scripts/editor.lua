@@ -129,4 +129,4 @@ LoadProp ("gametile", "tree1")
 LoadProp ("gametile", "tree2")
 LoadProp ("gametile", "tree3")
 
-SetEditorMode ("B1")
+SetEditorMode ("G")

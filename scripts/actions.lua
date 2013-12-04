@@ -17,7 +17,7 @@ if player.dash then
             end)
         end
 end
-
+--[[
 function bombHandler (x, y)
     GameSurface.layer:insertProp(player.attack.timedbomb.prop)
     bombTimer = newTimer(2, function()
@@ -32,12 +32,12 @@ function bombHandler (x, y)
                                                             , false)
                                   end
                                 , false)
-end
+end]]
 
 function PlayerJump ()
     if (player.onGround or not player.doubleJumped) then
         player.body:setLinearVelocity( player.body:getLinearVelocity(), 0 )
-        player.body:applyLinearImpulse( 0, 180 )
+        player.body:applyLinearImpulse( 0, _playerDefaultVelocity_*2 )
         if not player.onGround then
             player.doubleJumped = true
         end

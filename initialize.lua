@@ -21,7 +21,7 @@ _levelFolder_ = "working_levels/"
 _levelFile_ = "level001.lv"
 
 -- _PlayerInit_ Values
-_playerDefaultVelocity_ = 200
+_playerDefaultVelocity_ = 75
 
 _bulletRadius_ = 5
 

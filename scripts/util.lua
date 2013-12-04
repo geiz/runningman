@@ -204,6 +204,7 @@ function LoadPropsFromTable (t, surface)
 	return max_priority
 end
 
+-- Gets the physics polygon for 1 item
 function GetPhysicsPolygon (physics)
 	local t = {}
 	for i, propdata in ipairs (physics.nodes) do
@@ -214,6 +215,7 @@ function GetPhysicsPolygon (physics)
 	return t
 end
 
+-- Gets physics polygon for 1 item.
 function GetPropPhysicsTable ()
 	local physics = {}
 	for filename, phys in pairs (Physics) do
@@ -225,13 +227,13 @@ end
 
 function LoadPropPhysicsTable (physics)
 	Physics = {}
-	for filename, physinfo in pairs (physics or {}) do
-		Physics[filename] = {}
-		Physics[filename].nodes = {}
+	for objname, physinfo in pairs (physics or {}) do
+		Physics[objname] = {}
+		Physics[objname].nodes = {}
 		
 		-- Create a draggable prop for each node on the polygon
 		for i = 1, #physinfo.nodes, 2 do
-			table.insert (Physics[filename].nodes, CreatePhysicsNodeProp (
+			table.insert (Physics[objname].nodes, CreatePhysicsNodeProp (
 				physinfo.nodes[i], physinfo.nodes[i+1]))
 		end
 		-- Create an edge line for each pair of nodes
