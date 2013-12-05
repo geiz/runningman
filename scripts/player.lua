@@ -32,31 +32,14 @@ player.rect = player.body:addRect( -10, -10, 10, 10 )
 player.polygon :setRestitution( 0 ) -- valid value between 0 - 1
 player.polygon :setFriction( 1 )
 player.rect:setSensor( true )
-
--------- player body imgs/settings
---player.body.prop = newImg("hero1-idle.png",10,16)
-player.body.anim = CreateProp ("player_anim")
---player.body.prop = newImg("hero1-idle.png",10,16)
-player.body.anim:setParent(player.body)
 player.body.direction = 0 -- 0 = left, 1 = right
-player.bullets = {}
---------
--------- player attack imgs/settings
--- 
-player.attack = world:addBody( MOAIBox2DBody.DYNAMIC )
-player.attack.tag = 'bomb'
-player.attack:setFixedRotation( false)
-player.attack:setMassData(10)
-player.attack:resetMassData()
+
+-- Creates and adds player prop to the layer
+player.prop = CreateProp("ninja1")
+player.prop:setParent(player.body)
+GameSurface.partition:insertProp (player.prop)
+GameSurface.props[player.prop] = true
 
 
-player.attack.timedbomb = {}
-player.attack.timedbomb.attacking = false
-player.attack.timedbomb.prop = CreateProp ("bomb_small")
-
-player.attack.slash1 = {}
-player.attack.slash1.attacking = false
-player.attack.slash1.anim = CreateProp ("player_slash_anim")
---player.attack.slash1.prop = newImg("slash1-3frames.png",10,16,3,1)
---player.attack.slash1.prop:setparent(player.body)
---player.attack.prop:setParent(player.body)
+-- locks camera to player
+GameCamera:setParent(player.body)
