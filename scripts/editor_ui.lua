@@ -11,10 +11,6 @@
 	-- and editor support functions
 ]]
 
-function xyOverTray (x, y)
-end
-
-
 mouse_x = 0
 mouse_y = 0
 
@@ -83,9 +79,12 @@ function editorMouseMove ( x, y )
 	
 	-- Move a prop along with mouse pointer
 	if pick then
+		-- Change the prop's location based on change in mouse position
 		world_x, world_y = pick.layer:wndToWorld ( mouse_x, mouse_y )
 		prev_x, prev_y = pick.layer:wndToWorld ( old_x, old_y )
-		pick.prop:addLoc ( world_x - prev_x, world_y - prev_y )
+		pick:addLoc ( world_x - prev_x, world_y - prev_y )
+		-- Call prop's update function (if available)
+		if pick.onUpdate then pick.onUpdate () end
 	end
 	
 	-- Move a layer along with mouse pointer
@@ -133,9 +132,9 @@ function editorMouseClick ( down )
 						PhysicsEditorSurface:clearProps ()
 						PhysicsEditorBackground:clearProps ()
 						PhysicsEditorCamera:setLoc (0,0)
-						local prop = CreateProp (pick.name)
-						--prop.body = CreatePhysicsBody (_world_, pick.name, 0, 0)
-						PlaceInLayer (PhysicsEditorBackground, prop, 0, 0)
+						print ("PlaceInLayer")
+						local prop = PlaceInLayer (PhysicsEditorBackground, CreateProp (pick.name), 0, 0)
+						print ("PlacePhysicsNodes")
 						PlacePhysicsNodes (PhysicsEditorSurface, PhysicsEditorBackground, prop)
 					else
 						-- Dropping an ordinary game prop into game world
@@ -166,8 +165,12 @@ function editorMouseClick ( down )
 			end
 			pick = nil
 			
-			
-			SaveLevel (_levelFolder_..'level001.lv')
+			if PhysicsEditorOn then
+				print ("Saving physics info")
+				SavePhysicsInfo ()
+			else
+				SaveLevel (_levelFolder_ .. _levelFile_)
+			end
 		end
 	end
 end
@@ -186,5 +189,3 @@ function editorMouseClickRight ( down )
 		scroll_tray_layer = nil
 	end
 end
-
-

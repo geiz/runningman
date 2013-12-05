@@ -21,6 +21,8 @@ _dataFolder_ = "data/" -- referene data files (save, load, etc)
 _scriptFolder_ = "scripts/"
 _levelFolder_ = "working_levels/"
 _levelFile_ = "level001.lv"
+_physicsConfigFile_ = "physics_config.lua"
+_physicsEditorFile_ = _dataFolder_ .. "autogen_physics.lua"
 
 -- _PlayerInit_ Values
 _playerDefaultVelocity_ = 75
@@ -35,6 +37,9 @@ _worldFriction_ = 0.2
 
 
 _charCode_ = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _+-()[]{}|\/?.,<>!~`@#$%^&*\'":;'
+
+-- Disable buffered output: docs say this is important for osx platform
+io.stdout:setvbuf("no")
 
 function extend (fileName)
 	dofile("scripts/"..fileName)

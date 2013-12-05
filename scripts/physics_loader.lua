@@ -4,9 +4,28 @@
 _world_ = _world_ or MOAIBox2DWorld.new ()
 
 -- Load configuration files
-local PhysConfig = dofile ('physics_config.lua')
-local PhysAutogen = dofile (_dataFolder_ .. 'autogen_physics.lua')
+local PhysConfig = dofile (_physicsConfigFile_)
+local PhysAutogen = dofile (_physicsEditorFile_)
 
+
+function GetPhysicsPolygon (name, index)
+-- Gets fixture table for object name from autogen file.
+-- Returns fixture at key "index" (default 1). If doesn't exist, returns nil.
+	if not PhysAutogen[name] then return nil end
+	return PhysAutogen[name][index or 1]
+end
+
+function SetPhysicsPolygon (name, index, polygon)
+-- Sets a fixture table for object name from autogen file.
+-- The polygon is stored by reference, so future changes to polygon data
+--  are automatically visible without another call to this function.
+	if not PhysAutogen[name] then PhysAutogen[name] = {} end
+	PhysAutogen[name][index or 1] = polygon
+end
+
+function SavePhysicsInfo ()
+	saveTable (PhysAutogen, _physicsEditorFile_)
+end
 
 function CreatePhysicsBody (world, name, x, y)
 -- Creates a Box2D body for the given prop name in the given physics world.
@@ -24,12 +43,12 @@ function CreatePhysicsBody (world, name, x, y)
 	local linearDamping = PhysConfig[name].linearDamping
 	local rotationalInertia = PhysConfig[name].rotationalInertia
 	local fixedRotation = PhysConfig[name].fixedRotation
-	if fixedRotation == nil then fixedRotation = true end
-	local bullet = PhysConfig[name].bullet  -- Note: Only set this to true for very fast-moving objects
+	if fixedRotation == nil then fixedRotation = true end   -- fixedRotation defaults to true
+	local bullet = PhysConfig[name].bullet     -- Note: Only set bullet to true for very fast-moving objects
 	local sensor = PhysConfig[name].sensor
-	if sensor == nil then sensor = true end
-	local friction = PhysConfig[name].friction        -- a fixture property, applied to all fixtures
-	local restitution = PhysConfig[name].restitution  -- a fixture property, applied to all fixtures 
+	if sensor == nil then sensor = true end                 -- sensor defaults to true
+	local friction = PhysConfig[name].friction
+	local restitution = PhysConfig[name].restitution
 	
 	-- Create body
 	local body = world:addBody (MOAIBox2DBody[string.upper (bodyType)], x, y)
@@ -48,14 +67,14 @@ function CreatePhysicsBody (world, name, x, y)
 	-- Load physics fixtures from autogen file.
 	for fixtureName, fixtureConfig in pairs (PhysAutogen[name]) do
 		if type (fixtureConfig) == 'table' then
-			body.fixtures = createEdgeFixtures (body, fixtureConfig, friction, restitution)
+			body.fixtures = createEdgeFixtures (body, fixtureConfig, sensor, friction, restitution)
 		end
 	end
 	
 	return body
 end
 
-function createEdgeFixtures (body, polygon, friction, restitution)
+function createEdgeFixtures (body, polygon, sensor, friction, restitution)
 -- Adds a series of fixtures to the body.
 -- There will be one chain fixture for each sequence of edges with the same type.
 -- Each fixture will have a .type element containing the edge type.
@@ -73,6 +92,7 @@ function createEdgeFixtures (body, polygon, friction, restitution)
 		if edgeTypes[n_end+2] ~= edgeTypes[n_end] then  -- changing edge types?
 			local fixture = addFixtureChain (body, polygon, n_start, n_end)
 			fixture.type = edgeTypes[n_start]
+			if sensor ~= nil then fixture:setSensor (sensor) end
 			if friction then fixture:setFriction (friction) end
 			if restitution then fixture:setRestitution (restitution) end
 			table.insert (fixtures, fixture)

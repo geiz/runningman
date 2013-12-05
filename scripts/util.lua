@@ -190,7 +190,6 @@ function loadTable ( file_name )
 	return dofile ( file_name )
 end
 
-Physics = {}  -- filename -> physics_info
 local SingleQuads = {}
 
 function LoadPropsFromTable (t, surface)
@@ -202,43 +201,6 @@ function LoadPropsFromTable (t, surface)
 		max_priority = math.max (max_priority, data.priority + 1)
 	end
 	return max_priority
-end
-
--- Gets the physics polygon for 1 item
-function GetPhysicsPolygon (physics)
-	local t = {}
-	for i, propdata in ipairs (physics.nodes) do
-		local x, y = propdata.prop:getLoc ()
-		table.insert (t, x)
-		table.insert (t, y)
-	end
-	return t
-end
-
--- Gets physics polygon for 1 item.
-function GetPropPhysicsTable ()
-	local physics = {}
-	for filename, phys in pairs (Physics) do
-		physics[filename] = {}
-		physics[filename].nodes = GetPhysicsPolygon (phys)
-	end
-	return physics
-end
-
-function LoadPropPhysicsTable (physics)
-	Physics = {}
-	for objname, physinfo in pairs (physics or {}) do
-		Physics[objname] = {}
-		Physics[objname].nodes = {}
-		
-		-- Create a draggable prop for each node on the polygon
-		for i = 1, #physinfo.nodes, 2 do
-			table.insert (Physics[objname].nodes, CreatePhysicsNodeProp (
-				physinfo.nodes[i], physinfo.nodes[i+1]))
-		end
-		-- Create an edge line for each pair of nodes
-		--Physics[filename].edgeProp = CreatePhysicsEdgeProp (Physics[filename])
-	end
 end
 
 function ClearLevel ()
@@ -253,6 +215,8 @@ function FileExists (filename)
 end
 
 function LoadLevel (level_filename)
+	local computed_priority = 1
+	
 	if FileExists (level_filename) then
 		-- Load level file.
 		ClearLevel ()
@@ -260,19 +224,18 @@ function LoadLevel (level_filename)
 		local p1 = LoadPropsFromTable (all.GameSurface, GameSurface)
 		local p2 = LoadPropsFromTable (all.BackgroundSurface2, BackgroundSurface2)
 		local p3 = LoadPropsFromTable (all.BackgroundSurface1, BackgroundSurface1)
-		LoadPropPhysicsTable (all.PhysicsTable)
-		return math.max (p1, p2, p3)
+		computed_priority = math.max (p1, p2, p3)
 	else
 		-- File doesn't exist. Start empty level.
 		ClearLevel ()
-		LoadPropPhysicsTable (nil)  -- TODO: store physics info in separate file?
-		return 1
+		computed_priority = 1
 	end
+	
+	return computed_priority
 end
 
 function CreateCommonSurfaces (viewport, camera)
 	GameSurface = CreateLayer (viewport, camera)
-	--PhysicsEditorSurface = CreateLayer (viewport, camera)
 	BackgroundSurface2 = CreateLayer (viewport, camera, 0.5, 0.85)
 	BackgroundSurface1 = CreateLayer (viewport, camera, 0.25, 0.8)
 	BackgroundSurface1.layer:setClearColor (1,1,1)  -- Set this surface to clear the screen
@@ -398,13 +361,12 @@ function CreatePhysicsNodeProp (x, y)
 	return prop
 end
 
-function CreatePhysicsEdgeProp (physics)
+function CreatePhysicsEdgeProp (polygon)
 
 	-- Callback for typed edge outline
 	local function edgeTypeCallback ()
-		local pointList = GetPhysicsPolygon (physics)
-		local edgeTypes = getEdgeTypes (pointList)
-		for n = 1, #pointList, 2 do
+		local edgeTypes = getEdgeTypes (polygon)
+		for n = 1, #polygon, 2 do
 			local edgeColors = {
 				GROUND = { 0.4, 0.4, 0, 1 },
 				SLOPE = { 1, 1, 0, 1 },
@@ -413,19 +375,9 @@ function CreatePhysicsEdgeProp (physics)
 			}
 			MOAIGfxDevice.setPenColor (unpack (edgeColors[edgeTypes[n]]))
 			MOAIGfxDevice.setPenWidth ( 2 )
-			local m = n + 2; if m > #pointList then m = 1 end
-			MOAIDraw.drawLine (pointList[n], pointList[n+1], pointList[m], pointList[m+1])
+			local m = n + 2; if m > #polygon then m = 1 end
+			MOAIDraw.drawLine (polygon[n], polygon[n+1], polygon[m], polygon[m+1])
 		end
-	end
-
-	-- Callback for simple polygon outline
-	local function oldPolygonCallback ()
-		MOAIGfxDevice.setPenColor ( 0, 1, 0, 1 )
-		MOAIGfxDevice.setPenWidth ( 2 )
-		local pointList = GetPhysicsPolygon (physics)
-		table.insert (pointList, pointList[1])  -- copy first point to end so polygon is closed
-		table.insert (pointList, pointList[2])
-		MOAIDraw.drawLine (pointList)
 	end
 
 	local prop = MOAIProp2D.new ()
@@ -440,36 +392,39 @@ function CreatePhysicsEdgeProp (physics)
 end
 
 function PlacePhysicsNodes (surface, background_surface, prop)
-	local physics = Physics[prop.name] or {}
-	if not physics.nodes then
-		-- Create a default set of nodes
+	local polygon = GetPhysicsPolygon (prop.name, 1)
+	
+	-- Create a default polygon if it doesn't exist or has fewer than 3 vertices
+	if not polygon or #polygon < 6 then
 		local w = prop.w * prop.basicScale
 		local h = prop.h * prop.basicScale
-		physics.nodes = {}
-		table.insert (physics.nodes, CreatePhysicsNodeProp (-w/2, -h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (-w/2, 0))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (-w/2, h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (0, h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (w/2, h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (w/2, 0))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (w/2, -h/2))
-		table.insert (physics.nodes, CreatePhysicsNodeProp (0, -h/2))
+		polygon = {  -- Create a polygon with 8 vertices in a rectangular shape
+			-w/2,  -h/2,
+			-w/2,  0,
+			-w/2,  h/2,
+			 0,    h/2,
+			 w/2,  h/2,
+			 w/2,  0,
+			 w/2, -h/2,
+			 0,   -h/2,
+		}
+		SetPhysicsPolygon (prop.name, 1, polygon)
 	end
-	if not physics.edgeProp then
-		-- Create a default set of edges
-		physics.edgeProp = CreatePhysicsEdgeProp (physics)
-	end
-	-- Insert nodes into partition
-	for i, propdata in ipairs (physics.nodes) do
-		surface.partition:insertProp (propdata.prop)
-		surface.props[propdata] = true
-		propdata.layer = surface.layer
-		propdata.layerdata = surface
-	end
-	-- Insert edges into partition
-	background_surface.partition:insertProp (physics.edgeProp.prop)
 	
-	Physics[prop.name] = physics
+	-- Create props that draw polygon vertices
+	for i = 1, #polygon, 2 do
+		local prop = CreatePhysicsNodeProp (polygon[i], polygon[i+1])
+		function prop:onUpdate ()
+			polygon[i], polygon[i+1] = prop:getLoc ()
+		end
+		surface.partition:insertProp (prop)
+		surface.props[prop] = true
+		prop.layer = surface.layer
+		prop.layerdata = surface.layerdata		
+	end
+	
+	-- Create a prop that draws polygon edges
+	background_surface.partition:insertProp (CreatePhysicsEdgeProp (polygon))
 end
 
 -- Removes a prop from its surface

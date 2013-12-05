@@ -1,4 +1,4 @@
-dofile ("initialize.lua")
+dofile ('initialize.lua')
 extend ('util.lua')
 extend ('image_loader.lua')
 extend ('physics_loader.lua')
@@ -44,7 +44,6 @@ end
 
 function SaveLevel (level_filename)
 	local level = {
-		PhysicsTable = GetPropPhysicsTable (),
 		GameSurface = GetPropInfo (GameSurface),
 		BackgroundSurface1 = GetPropInfo (BackgroundSurface1),
 		BackgroundSurface2 = GetPropInfo (BackgroundSurface2),
