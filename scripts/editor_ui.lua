@@ -115,6 +115,7 @@ function editorMouseClick ( down )
 			if pick == modeTile then
 				-- Cycle mode.
 				SetEditorMode (NextMode [EditMode])
+				pick = nil  -- don't let the mode tile get dragged
 			else
 				-- We're picking up a prop from a game surface
 				_priority_ = _priority_ + 1

@@ -26,14 +26,17 @@ return {
 	
 	tileG = {
 		filename = "tileG.png",
+		ui_only = true,
 	},
 
 	tileB1 = {
 		filename = "tileB1.png",
+		ui_only = true,
 	},
 
 	tileB2 = {
 		filename = "tileB2.png",
+		ui_only = true,
 	},
 
 	bgImg = {

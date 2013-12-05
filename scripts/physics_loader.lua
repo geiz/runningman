@@ -8,6 +8,13 @@ local PhysConfig = dofile (_physicsConfigFile_)
 local PhysAutogen = dofile (_physicsEditorFile_)
 
 
+function ForEachPhysicsObject (f)
+-- Calls f(name, data) for each object in physics config file
+	for name, data in pairs (PhysConfig) do
+		f (name, data)
+	end
+end
+
 function GetPhysicsPolygon (name, index)
 -- Gets fixture table for object name from autogen file.
 -- Returns fixture at key "index" (default 1). If doesn't exist, returns nil.
@@ -77,7 +84,7 @@ end
 function createEdgeFixtures (body, polygon, sensor, friction, restitution)
 -- Adds a series of fixtures to the body.
 -- There will be one chain fixture for each sequence of edges with the same type.
--- Each fixture will have a .type element containing the edge type.
+-- Each fixture will have a .tag element containing the edge type.
 -- See getEdgeTypes for more info.
 
 	local edgeTypes = getEdgeTypes (polygon)
@@ -91,7 +98,7 @@ function createEdgeFixtures (body, polygon, sensor, friction, restitution)
 	for n_end = 1, #edgeTypes, 2 do
 		if edgeTypes[n_end+2] ~= edgeTypes[n_end] then  -- changing edge types?
 			local fixture = addFixtureChain (body, polygon, n_start, n_end)
-			fixture.type = edgeTypes[n_start]
+			fixture.tag = edgeTypes[n_start]
 			if sensor ~= nil then fixture:setSensor (sensor) end
 			if friction then fixture:setFriction (friction) end
 			if restitution then fixture:setRestitution (restitution) end
@@ -128,11 +135,9 @@ function addFixtureChain (body, polygon, n_start, n_end)
 -- Creates a chain fixture for the given body, with the first
 -- coordinate at (n_start,n_start+1) and last coordinate (n_end+2,n_end+3).
 -- Assumes n_start <= n_end.
-	--print ("FIXTURE CHAIN")
 	local chain = {}
 	for n = n_start, n_end + 2, 2 do
 		local m = n; if m > #polygon then m = 1 end
-		--print (n,m,polygon[m],polygon[m+1])
 		table.insert (chain, polygon[m])
 		table.insert (chain, polygon[m+1])
 	end

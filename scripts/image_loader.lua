@@ -2,6 +2,13 @@ local ConfigTable = dofile ('image_config.lua')
 local loadedDecks = {}
 local loadedImages = {}
 
+function ForEachImage (f)
+-- Calls f(name, data) for each item in image config table
+	for name, data in pairs (ConfigTable) do
+		f (name, data)
+	end
+end
+
 function CreateProp (type_name)
 -- Creates a prop with the given type_name, where type_name is a key in
 -- the image config table.

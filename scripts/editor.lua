@@ -11,7 +11,6 @@ local scale = 1
 view_w, view_h, tray_h = 960, 640, 80*scale
 viewport = OpenViewport ('Editor Tool', view_w*scale, view_h*scale)
 EditorCamera = MOAICamera2D.new ()
---EditorCamera:setLoc ( viewport.w/2, viewport.h/2 - tray_h )
 EditorCamera:setScl (1 / scale)
 camera = EditorCamera
 
@@ -23,17 +22,36 @@ BackgroundSurface1.layer:setClearColor (1,1,1)  -- Set this surface to clear the
 tray = CreateTray (tray_h * 4/5, tray_h)
 PositionTray (tray, "BOTTOM", viewport)
 
---'level001.lv' is moved as global variable in initialize.lua
-_priority_ = LoadLevel (_levelFolder_.._levelFile_)
+_priority_ = LoadLevel (_levelFolder_ .. _levelFile_)
+
+function LoadAllProps ()
+	local loaded = {}  -- keep track of what we've already loaded
+	
+	-- Load basic UI tile set
+	modeTile = LoadProp ("ui", "tileG")
+	loaded["tileG"] = true
+	
+	-- Load tiles with physics info
+	ForEachPhysicsObject (
+		function (name, config)
+			LoadProp ("game", name)
+			loaded[name] = true
+		end
+	)
+	
+	-- Load all other tiles
+	ForEachImage (
+		function (name, config)
+			if not loaded[name] and not config.ui_only then
+				LoadProp ("background", name)
+			end
+		end
+	)
+end
 
 function GetPropInfo (surface)
 	local all = {}
 	for data in pairs(surface.props) do
-		--[[local out = {
-			w = data.w, h = data.h,
-			filename = data.filename
-		}
-		out.scale = data.prop:getScl ()]]
 		local out = { name = data.name }
 		out.x, out.y = data.prop:getLoc ()
 		out.priority = data.prop:getPriority ()
@@ -65,7 +83,7 @@ function SetPhysicsEditorMode (on)
 		PhysicsEditorSurface.pixel_alpha_picking = false
 		camera = PhysicsEditorCamera
 		
-		ResetTray (tray, "gametile")
+		ResetTray (tray, "game")
 		ShowLayers (PhysicsEditorBackground, PhysicsEditorSurface, tray)
 		TargetSurface = PhysicsEditorSurface
 		PhysicsEditorOn = true
@@ -98,19 +116,19 @@ function SetEditorMode (m)
 	EditMode = m
 	if m == "G" then
 		ReplaceItemImage (modeTile, "tileG")
-		ResetTray (tray, "basic", "gametile")
+		ResetTray (tray, "ui", "game")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, GameSurface, tray)
 		TargetSurface = GameSurface
 	end
 	if m == "B2" then
 		ReplaceItemImage (modeTile, "tileB2")
-		ResetTray (tray, "basic", "gametile")
+		ResetTray (tray, "ui", "background")
 		ShowLayers (BackgroundSurface1, BackgroundSurface2, tray)
 		TargetSurface = BackgroundSurface2
 	end
 	if m == "B1" then
 		ReplaceItemImage (modeTile, "tileB1")
-		ResetTray (tray, "basic", "gametile")
+		ResetTray (tray, "ui", "background")
 		ShowLayers (BackgroundSurface1, tray)
 		TargetSurface = BackgroundSurface1
 	end
@@ -118,14 +136,6 @@ end
 
 NextMode = { B1="B2", B2="G", G="B1" }
 
-modeTile = LoadProp ("basic", "tileG")
-LoadProp ("gametile", "cohart")
-LoadProp ("gametile", "squirrel")
-LoadProp ("gametile", "rock1")
-LoadProp ("gametile", "mountain1")
-LoadProp ("gametile", "mountain2")
-LoadProp ("gametile", "tree1")
-LoadProp ("gametile", "tree2")
-LoadProp ("gametile", "tree3")
+LoadAllProps ()
 
 SetEditorMode ("G")
