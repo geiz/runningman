@@ -583,5 +583,6 @@ function LoadProp (series, name)
 	local prop = CreateProp (name)
 	if not PropsByType[series] then PropsByType[series] = {} end
 	table.insert (PropsByType[series], prop)
+	SetPhysicsBox (name, prop.w, prop.h)   -- makes sure physics fixtures are scaled correctly if prop size changes
 	return prop
 end

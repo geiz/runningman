@@ -95,7 +95,7 @@ return {
 		filename = "Monster-squirrel.png",
 		width = 32,
 		height = 32,
-		scale = 3,
+		scale = 4,
 		
 		eating = {
 			first_frame = 1,

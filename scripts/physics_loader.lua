@@ -1,8 +1,5 @@
 -- This file contains functions to create physics bodies.
 
--- Make sure the physics world exists
-_world_ = _world_ or MOAIBox2DWorld.new ()
-
 -- Load configuration files
 local PhysConfig = dofile (_physicsConfigFile_)
 local PhysAutogen = dofile (_physicsEditorFile_)
@@ -28,6 +25,33 @@ function SetPhysicsPolygon (name, index, polygon)
 --  are automatically visible without another call to this function.
 	if not PhysAutogen[name] then PhysAutogen[name] = {} end
 	PhysAutogen[name][index or 1] = polygon
+end
+
+function SetPhysicsBox (name, new_width, new_height)
+-- Sets the expected width and height of the named object.
+-- If the given size is different than the object's expected size,
+--  then rescale all points to fit the new width and height.
+-- If the given name does not have a physics configuration, do nothing.
+	if not PhysAutogen[name] then return end
+	
+	local old_width = PhysAutogen[name].width or new_width
+	local old_height = PhysAutogen[name].height or new_height
+	
+	-- If new size is different, then perform re-scaling of all polygons.
+	if old_width ~= new_width or old_height ~= new_height then
+		local scale_width = new_width / old_width
+		local scale_height = new_height / old_height
+		for polygon_i, polygon in ipairs (PhysAutogen[name]) do
+			for i = 1, #polygon, 2 do
+				polygon[i] = polygon[i] * scale_width
+				polygon[i+1] = polygon[i+1] * scale_height
+			end
+		end
+	end
+	
+	-- Set new expected width and height.
+	PhysAutogen[name].width = new_width
+	PhysAutogen[name].height = new_height
 end
 
 function SavePhysicsInfo ()
@@ -72,10 +96,8 @@ function CreatePhysicsBody (world, name, x, y)
 	end
 	
 	-- Load physics fixtures from autogen file.
-	for fixtureName, fixtureConfig in pairs (PhysAutogen[name]) do
-		if type (fixtureConfig) == 'table' then
-			body.fixtures = createEdgeFixtures (body, fixtureConfig, sensor, friction, restitution)
-		end
+	for fixtureName, fixtureConfig in ipairs (PhysAutogen[name]) do
+		body.fixtures = createEdgeFixtures (body, fixtureConfig, sensor, friction, restitution)
 	end
 	
 	return body
