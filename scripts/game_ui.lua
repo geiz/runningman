@@ -13,12 +13,12 @@ function gameKeyboardEvent ( key, down )
     if key == 97 then
         print('left')
         player.move.left = down
-        --player.body.anim:setScl (-player.body.anim.basicScale, player.body.anim.basicScale)
+        player.body.anim:setScl (-1, 1)
     -- 'd' key
     elseif key == 100 then
         print('right')
         player.move.right = down
-        --player.body.anim:setScl (player.body.anim.basicScale, player.body.anim.basicScale)
+        player.body.anim:setScl (1, 1)
     end
 
     if key == 102 and down == true then

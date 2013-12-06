@@ -1,5 +1,6 @@
 local ConfigTable = dofile ('image_config.lua')
 local loadedDecks = {}
+local loadedTextures = {}
 local loadedImages = {}
 
 function ForEachImage (f)
@@ -9,47 +10,40 @@ function ForEachImage (f)
 	end
 end
 
-function CreateProp (type_name)
+function CreateProp (name)
 -- Creates a prop with the given type_name, where type_name is a key in
 -- the image config table.
 
-	if not ConfigTable[type_name] then
-		error ("ERROR: invalid type_name '%s' passed to CreateProp.\n" ..
-			"    Perhaps an entry in image_config.lua is missing?", tostring (type_name))
+	if not ConfigTable[name] then
+		error ("ERROR: invalid name '%s' passed to CreateProp.\n" ..
+			"    Perhaps an entry in image_config.lua is missing?", tostring (name))
 		return nil
 	end
 
 	local prop = MOAIProp2D.new()
-	SwitchDeck (prop, type_name)
+	SwitchDeck (prop, name)
 	
 	return prop
 end
 
-function SwitchDeck (prop, type_name)
--- Sets the prop to the given config type.
+function ResetImageLoader ()
+-- Clears all textures, decks, and images; and reloads image config file
+	ConfigTable = dofile ('image_config.lua')
+	loadedDecks = {}
+	loadedTextures = {}
+	loadedImages = {}
+end
+
+function SwitchDeck (prop, name)
+-- Sets the prop to the given config name.
 -- Makes any necessary adjustments to the prop's parameters.
+-- Sets prop.scale to the scale in the config file. NOT the same as using the setScl function!
 
-	-- Get configuration info about this prop type
-	local config = ConfigTable[type_name]
-	if not ConfigTable[type_name] then
-		error ("ERROR: invalid type_name '%s' passed to SwitchDec.\n" ..
-			"    Perhaps an entry in image_config.lua is missing?", tostring (type_name))
-		return nil
-	end
+	local config = ConfigTable[name]
 
-	-- Figure out which folder the image is in
-	local folder = _imgFolder_
-	if isAnim (type_name) then
-		folder = _animFolder_
-	end
-
-	-- Load the deck
-	local deck = LoadTextureAsDeck (folder .. config.filename, config.width, config.height)
+	-- Create a deck with the given config name.
+	local deck = CreateDeck (name)
 	prop:setDeck (deck)
-	
-	-- Deal with scaling
-	prop.basicScale = config.scale or 1
-	prop:setScl (prop.basicScale)
 	
 	-- Set default animation frame
 	local default_anim = config.default or config.idle
@@ -66,46 +60,72 @@ function SwitchDeck (prop, type_name)
 	function prop:animCoordImage (x, y)
 		-- Find out which frame of animation we're on, and transform accordingly.
 		local index = self:getIndex ()
-		local row = math.floor ((index - 1) / self.tiles_wide) % self.tiles_high
-		local col = (index - 1) % self.tiles_wide
-		return x + col * self.w, y + row * self.h
+		local row = math.floor ((index - 1) / self.deck.tiles_wide) % self.deck.tiles_high
+		local col = (index - 1) % self.deck.tiles_wide
+		return x/prop.scale + col * self.deck.tile_w, y/prop.scale + row * self.deck.tile_h
 	end
 	
 	-- Set misc. info
-	prop.w, prop.h = deck.w, deck.h
-	prop.tiles_wide = deck.tiles_wide
-	prop.tiles_high = deck.tiles_high
+	prop.w = deck.w
+	prop.h = deck.h
+	prop.scale = deck.scale
 	prop.deck = deck
-	prop.name = type_name
+	prop.name = name
 end
 
-function isAnim (type_name)
+function isAnim (name)
 -- Returns true if the image type has animations.
 -- This is how we choose: if any values in the configuation are tables,
 --   then assume this is an animation. Otherwise assume it is not.
-	for k,v in pairs (ConfigTable[type_name]) do
+	for k,v in pairs (ConfigTable[name]) do
 		if type (v) == 'table' then return true end
 	end
 	return false
 end
 
-function LoadTextureAsDeck (filename, tile_w, tile_h)
--- Loads a texture from a file. Returns a deck.
--- tile_w and tile_h default to texture width and height.
--- If a deck with the filename has previously been created, that deck wil be returned.
+function LoadTexture (filename)
+-- Loads a texture from a file.
+-- If the texture filename was already loaded, does not load again.
+	local texture = loadedTextures[filename]
+	if not texture then
+		texture = MOAITexture.new()
+		texture:load (filename)
+		loadedTextures[filename] = texture
+	end
+	return texture
+end
+
+function CreateDeck (name)
+-- Creates a deck from the named configuration.
+-- If a deck has already been created for this configuration, just return it.
+-- Config width and height are assumed to be the pixel size of the image tile.
+-- To scale the image to a different size, the scale should be set.
 
 	-- Has this deck already been created?
-	if loadedDecks[filename] then return loadedDecks[filename] end
+	if loadedDecks[name] then return loadedDecks[name] end
 	
+	-- Get configuration info for this name
+	local config = ConfigTable[name]
+	if not ConfigTable[name] then
+		error ("ERROR: invalid name '%s' passed to SwitchDeck.\n" ..
+			"    Perhaps an entry in image_config.lua is missing?", tostring (name))
+		return nil
+	end
+
+	-- Figure out which folder the texture image is in
+	local folder = _imgFolder_
+	if isAnim (name) then
+		folder = _animFolder_
+	end
+
 	-- Load the texture.
-	local texture = MOAITexture.new()
-	texture:load (filename)
+	local texture = LoadTexture (folder .. config.filename)
 
 	-- Compute tile size, tiles across, and uv texture dimensions
 	local texture_w, texture_h = texture:getSize()
-	
-	tile_w = tile_w or texture_w
-	tile_h = tile_h or texture_h
+	local tile_w = config.width or texture_w
+	local tile_h = config.height or texture_h
+	local scale = config.scale or 1
 
 	local tiles_wide = math.floor (texture_w / tile_w)
 	local tiles_high = math.floor (texture_h / tile_h)
@@ -115,14 +135,19 @@ function LoadTextureAsDeck (filename, tile_w, tile_h)
 	
 	-- Create deck.
 	local deck = MOAITileDeck2D.new()
+	local rect_w = tile_w * scale
+	local rect_h = tile_h * scale
 	deck:setTexture (texture)
 	deck:setSize (tiles_wide, tiles_high, uv_width, uv_height, 0, 0)
-	deck:setRect (-tile_w/2, -tile_h/2, tile_w/2, tile_h/2)
-	loadedDecks[filename] = deck
+	deck:setRect (-rect_w/2, -rect_h/2, rect_w/2, rect_h/2)
+	loadedDecks[name] = deck
 	
 	-- Set custom fields
-	deck.w = tile_w
-	deck.h = tile_h
+	deck.w = rect_w
+	deck.h = rect_h
+	deck.scale = scale
+	deck.tile_w = tile_w
+	deck.tile_h = tile_h
 	deck.tiles_wide = tiles_wide
 	deck.tiles_high = tiles_high
 	
@@ -168,7 +193,10 @@ function LoadImageRaw (filename, tile_w, tile_h)
 	local tiles_high = math.floor (image_h / tile_h)
 	
 	-- Set custom fields
-	image.w, image.h = tile_w, tile_h
+	image.w = tile_w
+	image.h = tile_h
+	image.tile_w = tile_w
+	image.tile_h = tile_h
 	image.tiles_wide = tiles_wide
 	image.tiles_high = tiles_high
 	

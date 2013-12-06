@@ -396,8 +396,8 @@ function PlacePhysicsNodes (surface, background_surface, prop)
 	
 	-- Create a default polygon if it doesn't exist or has fewer than 3 vertices
 	if not polygon or #polygon < 6 then
-		local w = prop.w * prop.basicScale
-		local h = prop.h * prop.basicScale
+		local w = prop.w
+		local h = prop.h
 		polygon = {  -- Create a polygon with 8 vertices in a rectangular shape
 			-w/2,  -h/2,
 			-w/2,  0,
@@ -444,24 +444,23 @@ function RemoveProp (propdata)
 	propdata.layerdata = nil
 end
 
-function AlphaOk (propdata, world_x, world_y)
-	local w = propdata.w * propdata.basicScale
-	local h = propdata.h * propdata.basicScale
-	local center_x, center_y = propdata.prop:getLoc ()
-	local box_x = world_x - (center_x - w / 2)
-	local box_y = h - (world_y - center_y + h / 2)  -- inverted y-axis.
+function AlphaOk (prop, world_x, world_y)
+-- Finds out whether this prop has a non-transparent pixel at
+-- the given world coordinates.
+	local center_x, center_y = prop:getLoc ()
+	local box_x = world_x - (center_x - prop.w / 2)
+	local box_y = prop.h - (world_y - center_y + prop.h / 2)  -- inverted y-axis.
 	
 	-- Check against width/height to see if inside prop boundaries
-	if box_x < 0 or box_y < 0 or box_x >= w or box_y >= h then
+	if box_x < 0 or box_y < 0 or box_x >= prop.w or box_y >= prop.h then
 		return false
 	end
 	
 	-- Translate coordinates according to the current animation frame
-	local image_x, image_y = propdata:animCoordImage (
-		box_x / propdata.basicScale, box_y / propdata.basicScale)
+	local image_x, image_y = prop:animCoordImage (box_x, box_y)
 	
 	-- Load image (if not already loaded) and query the correct pixel
-	r, g, b, a = LoadImage (propdata.name):getRGBA (image_x, image_y)
+	r, g, b, a = LoadImage (prop.name):getRGBA (image_x, image_y)
 	if a >= 0.05 then
 		return true
 	else

@@ -120,7 +120,7 @@ function editorMouseClick ( down )
 				-- We're picking up a prop from a game surface
 				_priority_ = _priority_ + 1
 				pick:setPriority ( _priority_ )
-				pick:seekScl ( pick.basicScale, pick.basicScale, 0.125, MOAIEaseType.EASE_IN )
+				pick:seekScl ( 1, 1, 0.125, MOAIEaseType.EASE_IN )
 			end
 		end
 	else
