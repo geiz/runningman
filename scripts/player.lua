@@ -35,10 +35,11 @@ player.rect:setSensor( true )
 player.body.direction = 0 -- 0 = left, 1 = right
 
 -- Creates and adds player prop to the layer
+--[[
 player.prop = CreateProp("ninja1")
 player.prop:setParent(player.body)
 GameSurface.partition:insertProp (player.prop)
-GameSurface.props[player.prop] = true
+GameSurface.props[player.prop] = true]]
 
 
 -- locks camera to player

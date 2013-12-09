@@ -2,8 +2,9 @@
 
 dofile("initialize.lua")
 
-extend ("util.lua")
-extend ("image_loader.lua")
+extend ('util.lua')
+extend ('image_loader.lua')
+extend ('physics_loader.lua')
 extend ('camera.lua')
 extend ('world.lua')
 extend ('player.lua')

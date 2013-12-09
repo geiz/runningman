@@ -26,24 +26,45 @@ world:setUnitsToMeters(1/_worldScale_)
 GameSurface.layer:setBox2DWorld(world)
 
 
-ground = {} -- Variable first declared in util.lua
+bodies = {}
+bodies.fixtures = {}
+world.fixtures = {}
+--[[
 ground.body = world:addBody(MOAIBox2DBody.STATIC)
 ground.body.tag = 'environment'
 ground.verts = {} -- List of polygon groups used ingame
 ground.verts.nodes = {} -- Nodes in a polygon group used ingame
 ground.fixtures = {} -- Adding the polygon groups to Box2D
-
+]]
 -- Generates the verticies for each element for use in Box2D
 -- and adds it to the Box2D world
-function LoadPlayableVerts (t) 
-	ground.fixtures = {} -- Resets to nil
+function LoadPlayableVerts (world, t) 
 	for i, data in pairs (t or {}) do
 		local objname = data.name
 		local objx = data.x
 		local objy = data.y
-		ground.verts[i] = {} 
-		ground.verts[i].nodes = {} -- First value rep x, Second rep y
 
+		print(objx)
+		print(objy)
+
+		bodies [i] = world:addBody(MOAIBox2DBody.STATIC)
+		bodies [i].fixtures = {}
+
+		for j = 1, #Physics[objname].nodes, 2 do
+			table.insert (bodies [i].fixtures, (objx))
+			table.insert (bodies [i].fixtures, (objy))
+		end
+		table.insert (bodies[i].fixtures, (objx))
+		table.insert (bodies[i].fixtures, (objy))
+
+		table.insert (world.fixtures, 
+			bodies[i]:addChain(bodies[i].fixtures))
+		print ("inserted"..i)
+
+	--[[	ground.verts[i] = {} 
+		ground.verts[i].nodes = {} -- First value rep x, Second rep y
+]]
+--[[	
 		-- Adds each element in Physics.nodes to objx or objy and  
 		-- stores it in ground.verts.nodes
 		for j = 1, #Physics[objname].nodes, 2 do
@@ -59,7 +80,7 @@ function LoadPlayableVerts (t)
 		-- Inserts physics polygon from ground.verts into ground.fixture 
 		table.insert (ground.fixtures, 
 			ground.body:addChain(ground.verts[i].nodes))
-		print ("inserted"..i)
+		print ("inserted"..i)]]
 	end
 end
 
@@ -113,11 +134,14 @@ end
 
 local all = dofile (_levelFolder_ .. _levelFile_) -- loads level file
 LoadPropPhysicsTableGame(all.PhysicsTable)
-LoadPlayableVerts(all.GameSurface)
+--LoadPlayableVerts(world, all.GameSurface)
+b = CreatePhysicsBody(world, "rock1", 0,-190)
+--print(b)
+--[[
 LoadImageSurface(all.GameSurface, GameSurface)
 LoadImageSurface(all.BackgroundSurface2, BackgroundSurface2)
 LoadImageSurface(all.BackgroundSurface1, BackgroundSurface1)
---local p1 = LoadIntoGame (all.GameSurface, GameSurface)
+--local p1 = LoadIntoGame (all.GameSurface, GameSurface)]]
 
 MOAISim.pushRenderPass(BackgroundSurface1.layer)
 MOAISim.pushRenderPass(BackgroundSurface2.layer)
