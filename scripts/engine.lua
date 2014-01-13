@@ -4,31 +4,7 @@
 -- Contains all runtime detections.
 ----------------------------------------------------------------
 
--- handles player non-movement actions (attack, block, abilities, )
-playerActionThread = MOAICoroutine.new()
-playerActionThread:run(
-function()
-    while true do
-        if (player.attack.timedbomb.attacking == true) then
-            
-            player.attack.timedbomb.prop:setLoc(px, py)
-            layer:insertProp(player.attack.timedbomb.prop)
-            ---
-            bombHandler(px, py)
-            ---
 
-            player.attack.timedbomb.attacking = false
-        elseif (player.attack.slash1.attacking == true) then
-            currentPlayerAnim = player.attack
-            player.attack.slash1.prop:setParent(player.body)
-            layer:insertProp(player.attack.slash1.prop)
-
-            animTimer = newTimer(1.5, function () layer:removeProp(explosionProp) end, false)
-            player.attack.slash1.attacking = false
-        end
-        coroutine.yield()
-    end
-end )
 
 -- removes an index from array and shifts everything else above index down 1.
 function removeFromIndex( array, index )
@@ -55,65 +31,68 @@ end
 bullets = {}
 bulletsImg = {}
 bulletMAXdist = 100
-            -- Bullet motion
+function FireProjectile(layer)
+
+    local px,py = player.body:getPosition()
+    if (isBulletTrue == true) then
+        
+        bulletsImg[#bullets] = CreateProp ("bullet")
+        layer:insertProp(bulletsImg[#bullets])
+
+        local pvx, pvy = player.body:getLinearVelocity()
+
+        bullets[#bullets] = world:addBody( MOAIBox2DBody.KINEMATIC, px, py )
+        --
+        if player.body.direction == 0 then
+            bullets[#bullets]:setLinearVelocity(-150+pvx,0+pvy)
+        elseif player.body.direction == 1 then
+            bullets[#bullets]:setLinearVelocity(150+pvx, 0+pvy)
+        else
+            print("invalid player direction detected")
+        end
+        --
+       
+        bulletsImg[#bullets]:setParent(bullets[#bullets])
+        
+    end
+    isBulletTrue = false     
+
+    -- still working on this
+    tempBullets = bullets
+    for k,v in pairs (tempBullets) do -- for every bullet
+        local bx, by = bullets[k]:getPosition()
+        for s,t in ipairs (e) do -- for every enemy
+            ex,ey = e[s].body:getPosition() 
+             
+            if isCollide(ex, ey, _eRadius_, bx, by, _bulletRadius_ ) then
+                
+                layer:removeProp(bulletsImg[k])  
+                bullets[k]:destroy()  
+                removeFromIndex(bullets, k)
+
+
+                layer:removeProp (e[s].animIdle)
+                e[s].body:destroy()
+                removeFromIndex(e, s)
+            end
+        end
+        if math.abs(bx-px) > bulletMAXdist or math.abs(by-py) > bulletMAXdist then            
+            layer:removeProp(bulletsImg[k])  
+            bullets[k]:destroy()  
+            removeFromIndex(bullets, k)
+            print(#bullets)
+        end
+    end        
+end --[[
 playerActionThread = MOAICoroutine.new()
 playerActionThread:run(
 function ()
     while true do
-    	local px,py = player.body:getPosition()
-        if (isBulletTrue == true) then
-            
-            bulletsImg[#bullets] = CreateProp ("bullet")
-            layer:insertProp(bulletsImg[#bullets])
-    
-            local pvx, pvy = player.body:getLinearVelocity()
-
-            bullets[#bullets] = world:addBody( MOAIBox2DBody.KINEMATIC, px, py )
-            --
-            if player.body.direction == 0 then
-            	bullets[#bullets]:setLinearVelocity(-150+pvx,0+pvy)
-            elseif player.body.direction == 1 then
-            	bullets[#bullets]:setLinearVelocity(150+pvx, 0+pvy)
-            else
-            	print("invalid player direction detected")
-            end
-            --
-           
-            bulletsImg[#bullets]:setParent(bullets[#bullets])
-            
-        end
-        isBulletTrue = false     
-
-        -- still working on this
-        tempBullets = bullets
-        for k,v in pairs (tempBullets) do -- for every bullet
-        	local bx, by = bullets[k]:getPosition()
-            for s,t in ipairs (e) do -- for every enemy
-                ex,ey = e[s].body:getPosition() 
-                 
-                if isCollide(ex, ey, _eRadius_, bx, by, _bulletRadius_ ) then
-                    
-                    layer:removeProp(bulletsImg[k])  
-                    bullets[k]:destroy()  
-                    removeFromIndex(bullets, k)
-
-
-                    layer:removeProp (e[s].animIdle)
-                    e[s].body:destroy()
-                    removeFromIndex(e, s)
-                end
-            end
-			if math.abs(bx-px) > bulletMAXdist or math.abs(by-py) > bulletMAXdist then            
-                layer:removeProp(bulletsImg[k])  
-                bullets[k]:destroy()  
-                removeFromIndex(bullets, k)
-                print(#bullets)
-            end
-        end        
+        FireProjectile(GameSurface.layer)
         coroutine.yield()
     end
-end )
-
+end)
+]]
 
 
 -- player foot sensor
@@ -166,9 +145,9 @@ function ()
                 player.body.direction = 0
             end
         end
-        if player.platform then
-            dx = dx + player.platform:getLinearVelocity()
-        end
+        --[[if player.platform then
+           dx = dx + player.platform:getLinearVelocity()
+        end]]
        -- if not player.platform then
        --     propDir(dx)
        -- end
@@ -176,3 +155,19 @@ function ()
         coroutine.yield()
     end
 end )
+
+-- Creates a new animation thread
+-- TO DO: 
+-- 1. add animation wait timers.
+-- 2. add animation change code
+animationThread = MOAICoroutine.new()
+animationThread:run (
+function ()
+    while(true) do
+        --[[for k,#_e_ do
+            _e_.prop
+        end]]
+        player.prop:setIndex(player.prop:getIndex()+1)
+        coroutine.yield()
+    end
+end)

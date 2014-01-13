@@ -12,7 +12,6 @@ return {
 			last_frame = 64
 		}
 	},
-	
 	player_slash_anim = { -- TODO: Should this animation be in the player_anim image?
 		filename = "slash1-3frames.png",
 		width = 116,
@@ -121,5 +120,17 @@ return {
 			first_frame = 1,
 			frames = 3
 		}
-	}
+	},
+
+	ninja1 = {
+		filename = "cuteninja.png"
+	},
+
+	wallv = {
+		filename = "wallv.png"
+	},
+
+	wallh = {
+		filename = "wallh.png"
+	},
 }

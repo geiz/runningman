@@ -2,6 +2,9 @@ _height_ = 1
 _width_ = 4
 _max_ = _height_ * _width_
 
+e = {1,2,3,4}
+print (#e)
+
 MOAISim.openWindow("test", 320,480)
 
 vp = MOAIViewport.new()

@@ -8,8 +8,8 @@ return {
 	hero1 = {
 		bodyType = "kinematic",
 	},
-	force_slash1 = {
+	--[[force_slash1 = {
 		bodyType = "dynamic",
-	}
+	}]]
 }
 

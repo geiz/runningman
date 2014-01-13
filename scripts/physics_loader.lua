@@ -7,6 +7,59 @@ _world_ = _world_ or MOAIBox2DWorld.new ()
 local PhysConfig = dofile ('physics_config.lua')
 local PhysAutogen = dofile (_dataFolder_ .. 'autogen_physics.lua')
 
+function ForEachPhysicsObject (f)
+-- Calls f(name, data) for each object in physics config file
+	for name, data in pairs (PhysConfig) do
+		f (name, data)
+	end
+end
+
+function GetPhysicsPolygon (name, index)
+-- Gets fixture table for object name from autogen file.
+-- Returns fixture at key "index" (default 1). If doesn't exist, returns nil.
+	if not PhysAutogen[name] then return nil end
+	return PhysAutogen[name][index or 1]
+end
+
+function SetPhysicsPolygon (name, index, polygon)
+-- Sets a fixture table for object name from autogen file.
+-- The polygon is stored by reference, so future changes to polygon data
+--  are automatically visible without another call to this function.
+	if not PhysAutogen[name] then PhysAutogen[name] = {} end
+	PhysAutogen[name][index or 1] = polygon
+end
+
+function SetPhysicsBox (name, new_width, new_height)
+-- Sets the expected width and height of the named object.
+-- If the given size is different than the object's expected size,
+--  then rescale all points to fit the new width and height.
+-- If the given name does not have a physics configuration, do nothing.
+	if not PhysAutogen[name] then return end
+	
+	local old_width = PhysAutogen[name].width or new_width
+	local old_height = PhysAutogen[name].height or new_height
+	
+	-- If new size is different, then perform re-scaling of all polygons.
+	if old_width ~= new_width or old_height ~= new_height then
+		local scale_width = new_width / old_width
+		local scale_height = new_height / old_height
+		for polygon_i, polygon in ipairs (PhysAutogen[name]) do
+			for i = 1, #polygon, 2 do
+				polygon[i] = polygon[i] * scale_width
+				polygon[i+1] = polygon[i+1] * scale_height
+			end
+		end
+	end
+	
+	-- Set new expected width and height.
+	PhysAutogen[name].width = new_width
+	PhysAutogen[name].height = new_height
+end
+
+function SavePhysicsInfo ()
+	saveTable (PhysAutogen, _physicsEditorFile_)
+end
+
 
 function CreatePhysicsBody (world, name, x, y)
 -- Creates a Box2D body for the given prop name in the given physics world.

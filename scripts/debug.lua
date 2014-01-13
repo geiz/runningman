@@ -21,8 +21,7 @@ if _debugMode_ then
     debug:setFont( debug.font )
 
     -- 
-    layerDebug:setViewport( viewport )
-    layerDebug:insertProp( debug )
+    GameSurface.layer:insertProp( debug )
     MOAISim.pushRenderPass(layerDebug)
 
     -- update function for debugStatus box
@@ -30,13 +29,9 @@ if _debugMode_ then
     debugStatusThread:run( 
     function ()
         while true do
-            local x, y = player.body:getWorldCenter()
-            local dx, dy = player.body:getLinearVelocity()
-            debug:setString( 'x, y:   ' .. math.ceil( x ) .. ', ' .. math.ceil( y )
-                         .. '\ndx, dy: ' .. math.ceil( dx ) .. ', ' .. math.ceil( dy )
-                         .. '\nOn Ground: ' .. ( player.onGround and 'true' or 'false' )
-                         .. '\nContact Count: ' .. player.currentContactCount
-                         .. '\nPlatform: ' .. ( player.platform and 'true' or 'false' ) )
+            --local x, y = player.body:getWorldCenter()
+            --local dx, dy = player.body:getLinearVelocity()
+            debug:setString( 'Debug Enabled... You should see lines\nLines Change as you edit the game from editor')
             coroutine.yield()
         end
     end )
