@@ -6,16 +6,13 @@
 
 -- File Locations
 _imgFolder_ = "graphics/"
-_animFolder_ = _imgFolder_ .. "animation/"
+_animFolder_ = "animation/"
 _soundFolder_ = "sounds/"
 _dataFolder_ = "data/" -- referene data files (config, level, etc) 
 _scriptFolder_ = "scripts/"
-_libFolder_ = _scriptFolder_ .. "opplib/"
+_libFolder_ = "opplib/"
 _levelFile_ = "current-level.lv"
 
-function extend (fileName)
-	dofile("scripts/"..fileName)
-end
 
 function error (message, ...)
 -- Writes a message to stderr. If extra arguments are supplied, the message is formatted.
